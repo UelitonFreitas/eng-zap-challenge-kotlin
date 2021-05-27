@@ -41,6 +41,8 @@ dependencies {
     implementation(Dependencies.Android.androidXConstraintLayout)
 
     testImplementation(Dependencies.Test.junit)
+    testImplementation(Dependencies.Test.mockK)
+
     androidTestImplementation(Dependencies.Test.androidXjUnit)
     androidTestImplementation(Dependencies.Test.androidXEspresso)
     androidTestImplementation(Dependencies.Test.androidMockK)
