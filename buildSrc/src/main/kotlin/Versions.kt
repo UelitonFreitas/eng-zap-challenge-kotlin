@@ -12,4 +12,8 @@ object Versions {
         const val targetSdkVersion = 29
     }
 
+    object Test {
+        const val mockK = "1.11.0"
+    }
+
 }

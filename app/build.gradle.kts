@@ -43,4 +43,5 @@ dependencies {
     testImplementation(Dependencies.Test.junit)
     androidTestImplementation(Dependencies.Test.androidXjUnit)
     androidTestImplementation(Dependencies.Test.androidXEspresso)
+    androidTestImplementation(Dependencies.Test.androidMockK)
 }

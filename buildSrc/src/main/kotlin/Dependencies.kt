@@ -17,5 +17,6 @@ object Dependencies {
         const val junit = "junit:junit:4.12"
         const val androidXjUnit = "androidx.test.ext:junit:1.1.2"
         const val androidXEspresso = "androidx.test.espresso:espresso-core:3.3.0"
+        const val androidMockK = "io.mockk:mockk-android:${Versions.Test.mockK}"
     }
 }
