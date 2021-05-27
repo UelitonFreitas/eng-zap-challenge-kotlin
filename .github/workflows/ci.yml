@@ -41,7 +41,7 @@ jobs:
         wrapper-cache-enabled: true
         dependencies-cache-enabled: true
         configuration-cache-enabled: true
-        arguments: assembleRelease
+        arguments: assembleDebug
         
     - name: Run Kotlin Linter
       run: ./gradlew ktlintStagingDebugCheck
