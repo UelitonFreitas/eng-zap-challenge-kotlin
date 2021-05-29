@@ -41,7 +41,16 @@ jobs:
         wrapper-cache-enabled: true
         dependencies-cache-enabled: true
         configuration-cache-enabled: true
-        arguments: test
+        arguments: assembleRelease
         
-    - name: Run Kotlin Linter
-      run: ./gradlew ktlintStagingDebugCheck
+    - name: Run Unit Tests
+      run: ./gradlew test
+      
+    - name: Integration Tests
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 30
+        target: default
+        arch: x86
+        profile: Nexus 6
+      script: ./gradlew connectedCheck --stacktrace
