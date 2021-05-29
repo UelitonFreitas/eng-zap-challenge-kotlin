@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ZAPRealEstate">
         <activity
-            android:name=".MainActivity"
+            android:name=".mainscreen.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.ZAPRealEstate.NoActionBar">
             <intent-filter>
