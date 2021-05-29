@@ -49,7 +49,7 @@ jobs:
     - name: Integration Tests
       uses: reactivecircus/android-emulator-runner@v2
       with:
-        api-level: 30
+        api-level: 23
         target: default
         arch: x86
         profile: Nexus 6
