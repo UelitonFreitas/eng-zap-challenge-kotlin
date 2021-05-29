@@ -7,9 +7,9 @@ object Versions {
 
 
     object Android {
-        const val SDKCompile = 30
+        const val SDKCompile = 29
         const val minSdkVersion = 16
-        const val targetSdkVersion = 30
+        const val targetSdkVersion = 29
     }
 
 }
