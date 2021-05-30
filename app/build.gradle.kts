@@ -39,6 +39,7 @@ dependencies {
     implementation(Dependencies.Android.androidXCoreLibrary)
     implementation(Dependencies.Android.androidXAppCompat)
     implementation(Dependencies.Android.androidXConstraintLayout)
+    implementation(Dependencies.Android.androidXRecyclerview)
 
     testImplementation(Dependencies.Test.junit)
     testImplementation(Dependencies.Test.mockK)
