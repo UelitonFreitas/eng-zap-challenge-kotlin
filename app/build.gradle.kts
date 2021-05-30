@@ -32,6 +32,14 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
     }
+    compileOptions {
+        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 dependencies {
@@ -40,6 +48,10 @@ dependencies {
     implementation(Dependencies.Android.androidXAppCompat)
     implementation(Dependencies.Android.androidXConstraintLayout)
     implementation(Dependencies.Android.androidXRecyclerview)
+    implementation(Dependencies.retrofit)
+    implementation(Dependencies.gson)
+    implementation(Dependencies.gsonConverter)
+    implementation(Dependencies.loggingInterceptor)
 
     testImplementation(Dependencies.Test.junit)
     testImplementation(Dependencies.Test.mockK)
@@ -60,3 +72,4 @@ tasks.withType(Test::class).all {
     }
     maxParallelForks = Runtime.getRuntime().availableProcessors() / 2
 }
+

@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.zap.zaprealestate.R
 import com.zap.zaprealestate.mainscreen.adpters.PropertiesAdapter
-import com.zap.zaprealestate.model.PropertiesRepositoryImpl
+import com.zap.zaprealestate.model.remote.PropertiesRepositoryImpl
 import com.zap.zaprealestate.model.Property
 
 class MainActivity : AppCompatActivity(), MainScreenProtocols.View {
