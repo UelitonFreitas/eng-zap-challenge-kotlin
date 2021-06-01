@@ -32,6 +32,14 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
     }
+    compileOptions {
+        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 dependencies {
@@ -39,8 +47,31 @@ dependencies {
     implementation(Dependencies.Android.androidXCoreLibrary)
     implementation(Dependencies.Android.androidXAppCompat)
     implementation(Dependencies.Android.androidXConstraintLayout)
+    implementation(Dependencies.Android.androidXRecyclerview)
+    implementation(Dependencies.retrofit)
+    implementation(Dependencies.gson)
+    implementation(Dependencies.gsonConverter)
+    implementation(Dependencies.loggingInterceptor)
+    implementation(Dependencies.picasso)
+    implementation(Dependencies.Android.swipeToRefresh)
 
     testImplementation(Dependencies.Test.junit)
+    testImplementation(Dependencies.Test.mockK)
+
     androidTestImplementation(Dependencies.Test.androidXjUnit)
     androidTestImplementation(Dependencies.Test.androidXEspresso)
+    androidTestImplementation(Dependencies.Test.androidMockK)
 }
+
+tasks.withType(Test::class).all {
+    testLogging {
+        events = setOf(
+            org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED,
+            org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED,
+            org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
+        )
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+    maxParallelForks = Runtime.getRuntime().availableProcessors() / 2
+}
+
