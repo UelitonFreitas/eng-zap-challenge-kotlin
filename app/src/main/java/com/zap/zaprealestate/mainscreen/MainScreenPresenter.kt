@@ -9,14 +9,37 @@ class MainScreenPresenter (
 ) :
     MainScreenProtocols.Presenter {
 
-    private fun showProperties(properties: List<Property>) {
+    private var actualOffSet = 0
+    private val limitOffSet = 20
+    private val properties = mutableListOf<Property>()
 
-        properties.takeIf { it.isNotEmpty() }?.let {
-            view.showProperties(properties)
-        } ?: view.showEmptyList()
+    private fun showProperties(properties: List<Property>) {
+        view.hideLoading()
+
+        with(this.properties){
+            addAll(properties)
+            takeIf { it.isNotEmpty() }?.let {
+                view.showProperties(this)
+            } ?: view.showEmptyList()
+        }
     }
 
     override fun getPropertiesList() {
-        propertyRepository.getProperties(onSuccess = ::showProperties)
+        view.showLoading()
+        propertyRepository.getProperties(
+            actualOffSet,
+            limit = limitOffSet,
+            onError = ::showErrorMessage,
+            onSuccess = ::showProperties)
+    }
+
+    override fun loadNextPropertiesOffset() {
+        actualOffSet += limitOffSet
+        getPropertiesList()
+    }
+
+    private fun showErrorMessage(){
+        view.hideLoading()
+        view.showErrorMessage()
     }
 }

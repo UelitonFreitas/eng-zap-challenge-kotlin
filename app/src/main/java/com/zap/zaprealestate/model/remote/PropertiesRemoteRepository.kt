@@ -1,5 +1,6 @@
 package com.zap.zaprealestate.model.remote
 
+import android.util.Log
 import com.zap.zaprealestate.model.Property
 import com.zap.zaprealestate.model.PropertyRepository
 import com.zap.zaprealestate.model.remote.models.PropertyResponse
@@ -13,6 +14,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 
 class PropertiesRepositoryImpl : PropertyRepository {
+
+    companion object {
+        var cachedProperties: List<Property>? = null
+        const val tag = "PropertiesRepositoryImpl"
+    }
 
     private val logging: HttpLoggingInterceptor = HttpLoggingInterceptor()
         .setLevel(HttpLoggingInterceptor.Level.BODY)
@@ -29,30 +35,94 @@ class PropertiesRepositoryImpl : PropertyRepository {
 
     private val propertiesApiClient: PropertiesAPI = retrofit.create(PropertiesAPI::class.java)
 
-    override fun getProperties(onError: (() -> Unit)?, onSuccess: (List<Property>) -> Unit) {
+    override fun getProperties(
+        offSet: Int,
+        limit: Int,
+        onError: (() -> Unit)?,
+        onSuccess: (List<Property>) -> Unit
+    ) {
 
-        propertiesApiClient.getProperties()
-            ?.enqueue(object : Callback<List<PropertyResponse>?> {
+        cachedProperties?.let { properties ->
 
-                override fun onFailure(call: Call<List<PropertyResponse>?>, t: Throwable) {
-                    t.printStackTrace()
-                    onError?.invoke()
+            Log.i(tag, "Lading cached data with offset $offSet and  $limit")
+
+            val (fromIndex, toIndex) = getIndexSlice(offSet, limit)
+
+            Log.i(tag, "Lading cached data from index: $fromIndex to $toIndex")
+
+            when {
+                fromIndex >= properties.lastIndex -> {
+                    onSuccess(emptyList())
                 }
+                toIndex > properties.lastIndex-> onSuccess(
+                    properties.subList(
+                        fromIndex,
+                        properties.lastIndex
+                    )
+                )
+                else -> onSuccess(properties.subList(fromIndex, toIndex))
+            }
 
-                override fun onResponse(
-                    call: Call<List<PropertyResponse>?>,
-                    response: Response<List<PropertyResponse>?>
-                ) {
-                    val propertiesResponse = response.body()
+        } ?: loadPropertiesFromAPI(
+            offSet,
+            limit,
+            onError,
+            onSuccess
+        )
+    }
 
-                    val properties =
-                        propertiesResponse?.map { propertyResponse ->
-                            propertyResponse.run { Property(id, images) }
-                        } ?: emptyList()
-                    onSuccess(properties)
-                }
+    private fun loadPropertiesFromAPI(
+        offSet: Int,
+        limit: Int,
+        onError: (() -> Unit)?,
+        onSuccess: (List<Property>) -> Unit
+    ) {
 
-            })
+        Log.i(tag, "Lading data from API")
+
+        propertiesApiClient.getProperties()?.enqueue(object : Callback<List<PropertyResponse>?> {
+            override fun onFailure(call: Call<List<PropertyResponse>?>, t: Throwable) {
+                t.printStackTrace()
+                onError?.invoke()
+            }
+
+            override fun onResponse(
+                call: Call<List<PropertyResponse>?>,
+                response: Response<List<PropertyResponse>?>
+            ) {
+                val propertiesResponse = response.body()
+
+                val properties =
+                    propertiesResponse?.map {
+                        it.run { Property(id, images) }
+                    } ?: emptyList()
+
+                properties.takeIf {
+                    it.isNotEmpty()
+                }?.let {
+                    cacheProperties(it)
+
+                    val (fromIndex, toIndex) = getIndexSlice(offSet, limit)
+
+                    Log.i(tag, "Lading data from API from indexes: $fromIndex to $toIndex")
+
+                    onSuccess(properties.subList(fromIndex, toIndex))
+                } ?: onError?.invoke()
+            }
+        })
+    }
+
+    private fun cacheProperties(it: List<Property>) {
+        cachedProperties = it
+    }
+
+    private fun getIndexSlice(
+        offSet: Int,
+        limit: Int
+    ): Pair<Int, Int> {
+        val fromIndex = offSet
+        val toIndex = fromIndex + limit
+        return Pair(fromIndex, toIndex)
     }
 }
 

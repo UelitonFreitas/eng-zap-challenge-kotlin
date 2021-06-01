@@ -53,6 +53,7 @@ dependencies {
     implementation(Dependencies.gsonConverter)
     implementation(Dependencies.loggingInterceptor)
     implementation(Dependencies.picasso)
+    implementation(Dependencies.Android.swipeToRefresh)
 
     testImplementation(Dependencies.Test.junit)
     testImplementation(Dependencies.Test.mockK)
