@@ -2,4 +2,7 @@ package com.zap.zaprealestate.model.remote.models
 
 import com.google.gson.annotations.SerializedName
 
-data class PropertyResponse(@SerializedName("id") val id: String)
+data class PropertyResponse(
+    @SerializedName("id") val id: String,
+    @SerializedName("images") val images: List<String>
+)

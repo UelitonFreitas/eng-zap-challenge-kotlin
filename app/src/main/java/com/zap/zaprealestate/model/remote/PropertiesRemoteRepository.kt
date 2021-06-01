@@ -47,7 +47,7 @@ class PropertiesRepositoryImpl : PropertyRepository {
 
                     val properties =
                         propertiesResponse?.map { propertyResponse ->
-                            Property(propertyResponse.id)
+                            propertyResponse.run { Property(id, images) }
                         } ?: emptyList()
                     onSuccess(properties)
                 }
