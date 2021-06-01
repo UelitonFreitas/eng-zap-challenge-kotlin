@@ -29,7 +29,7 @@ class MainsScreenPresenterTest {
     @Test
     fun `should list all properties`() {
         val expectedProperties =
-            listOf(Property("aId"), Property("bId"), Property("bId"))
+            listOf(Property("aId", listOf("aImage")), Property("bId", listOf("aImage")), Property("bId", listOf("aImage")))
 
         returnFromRepository(expectedProperties)
 
