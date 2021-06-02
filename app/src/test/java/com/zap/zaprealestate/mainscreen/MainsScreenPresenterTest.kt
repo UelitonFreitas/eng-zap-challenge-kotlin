@@ -21,10 +21,14 @@ class MainsScreenPresenterTest {
 
     private val limitOffSet = 20
 
-    private val pageTwoExpectedProperties = listOf(Property("aId", listOf("aImage")), Property("bId", listOf("bImage")))
+    private val propertyA = Property("aId", listOf("aImage"), latitude = 1.0, longitude = 1.0)
+    private val propertyB = Property("bId", listOf("bImage"), latitude = 1.2, longitude = 1.2)
+    private val propertyC = Property("bcId", listOf("cImage"), latitude =1.3, longitude = 1.3)
+
+    private val pageTwoExpectedProperties = listOf(propertyA, propertyB, propertyC)
 
     private val pageZeroExpectedProperties =
-        listOf(Property("aId", listOf("aImage")), Property("bId", listOf("bImage")), Property("bcId", listOf("cImage")))
+        listOf(propertyA, propertyB, propertyC)
 
     @Before
     fun setUp() {
@@ -92,6 +96,21 @@ class MainsScreenPresenterTest {
         mainScreenPresenter.getPropertiesList()
 
         verify(atLeast = 1) { mainScreenView.hideLoading() }
+    }
+
+
+    @Test
+    fun `should not show properties without latitude and longitude`(){
+        val expectedProperties = listOf(propertyA, propertyC)
+
+        val propertiesWithoutLatAndLong =
+            listOf(propertyA, Property("bId", listOf("bImage")), propertyC)
+
+        returnFromRepository(0, limitOffSet, propertiesWithoutLatAndLong)
+
+        mainScreenPresenter.getPropertiesList()
+
+        verify(atLeast = 1) { mainScreenView.showProperties(eq(expectedProperties)) }
     }
 
     private fun assertPageOneProperties() {

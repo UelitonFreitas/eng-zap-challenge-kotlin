@@ -17,7 +17,7 @@ class MainScreenPresenter (
         view.hideLoading()
 
         with(this.properties){
-            addAll(properties)
+            addAll(properties.filter { it.latitude != 0.0 && it.longitude != 0.0 })
             takeIf { it.isNotEmpty() }?.let {
                 view.showProperties(this)
             } ?: view.showEmptyList()
