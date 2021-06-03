@@ -1,6 +1,7 @@
 package com.zap.zaprealestate.model.remote
 
 import android.util.Log
+import com.zap.zaprealestate.model.BusinessType
 import com.zap.zaprealestate.model.Property
 import com.zap.zaprealestate.model.PropertyRepository
 import com.zap.zaprealestate.model.remote.models.PropertyResponse
@@ -94,7 +95,7 @@ class PropertiesRepositoryImpl : PropertyRepository {
 
                 val properties =
                     propertiesResponse?.map {
-                        it.run { Property(id, images) }
+                        it.run { Property(id, images, businessType = BusinessType.SALE) }
                     } ?: emptyList()
 
                 properties.takeIf {

@@ -1,5 +1,6 @@
 package com.zap.zaprealestate.mainscreen
 
+import com.zap.zaprealestate.model.BusinessType
 import com.zap.zaprealestate.model.Property
 import com.zap.zaprealestate.model.PropertyRepository
 import io.mockk.MockKAnnotations
@@ -21,14 +22,69 @@ class MainsScreenPresenterTest {
 
     private val limitOffSet = 20
 
-    private val propertyA = Property("aId", listOf("aImage"), latitude = 1.0, longitude = 1.0)
-    private val propertyB = Property("bId", listOf("bImage"), latitude = 1.2, longitude = 1.2)
-    private val propertyC = Property("bcId", listOf("cImage"), latitude =1.3, longitude = 1.3)
+    private val salePropertyA = Property(
+        "aId",
+        listOf("aImage"),
+        latitude = 1.0,
+        longitude = 1.0,
+        usableAreas = 100,
+        price = "350001",
+        businessType = BusinessType.SALE
+    )
+    private val salePropertyB = Property(
+        "bId",
+        listOf("bImage"),
+        latitude = 1.2,
+        longitude = 1.2,
+        usableAreas = 50,
+        price = "3150001",
+        businessType = BusinessType.SALE
+    )
+    private val salePropertyC = Property(
+        "bcId",
+        listOf("cImage"),
+        latitude = 1.3,
+        longitude = 1.3,
+        usableAreas = 200,
+        price = "123213213123",
+        businessType = BusinessType.SALE
+    )
 
-    private val pageTwoExpectedProperties = listOf(propertyA, propertyB, propertyC)
+    private val rentPropertyA = Property(
+        "aId",
+        listOf("aImage"),
+        latitude = 1.22,
+        longitude = 1.2,
+        usableAreas = 212,
+        price = "12331",
+        businessType = BusinessType.RENT
+    )
+
+    private val rentPropertyB = Property(
+        "bId",
+        listOf("bImage"),
+        latitude = 1.1132,
+        longitude = 1.1232,
+        usableAreas = 213,
+        price = "123",
+        businessType = BusinessType.RENT
+    )
+
+    private val rentPropertyC = Property(
+        "cId",
+        listOf("cImage"),
+        latitude = 1.2323,
+        longitude = 1.212,
+        usableAreas = 21123123,
+        price = "315231231",
+        businessType = BusinessType.RENT
+    )
+    private val pageTwoExpectedProperties =
+        listOf(salePropertyA, salePropertyB, salePropertyC, rentPropertyB, rentPropertyB)
 
     private val pageZeroExpectedProperties =
-        listOf(propertyA, propertyB, propertyC)
+        listOf(salePropertyA, salePropertyB, salePropertyC, rentPropertyA)
+
 
     @Before
     fun setUp() {
@@ -38,7 +94,7 @@ class MainsScreenPresenterTest {
     }
 
     @Test
-    fun `should list all properties`() {
+    fun `should list all ZAP properties`() {
         assertInitialPropertiesList()
     }
 
@@ -65,14 +121,14 @@ class MainsScreenPresenterTest {
 
 
     @Test
-    fun `should show next properties page`(){
+    fun `should show next properties page`() {
         assertInitialPropertiesList()
 
         assertPageOneProperties()
     }
 
     @Test
-    fun `should show loading on view when fetching properties`(){
+    fun `should show loading on view when fetching properties`() {
         returnFromRepository(0, limitOffSet, pageZeroExpectedProperties)
 
         mainScreenPresenter.getPropertiesList()
@@ -81,7 +137,7 @@ class MainsScreenPresenterTest {
     }
 
     @Test
-    fun `should hide loading on view when fetching properties`(){
+    fun `should hide loading on view when fetching properties`() {
         returnFromRepository(0, limitOffSet, pageZeroExpectedProperties)
 
         mainScreenPresenter.getPropertiesList()
@@ -90,7 +146,7 @@ class MainsScreenPresenterTest {
     }
 
     @Test
-    fun `should hide loading on view when was an error`(){
+    fun `should hide loading on view when was an error`() {
         returnFromRepositoryWithError()
 
         mainScreenPresenter.getPropertiesList()
@@ -100,11 +156,20 @@ class MainsScreenPresenterTest {
 
 
     @Test
-    fun `should not show properties without latitude and longitude`(){
-        val expectedProperties = listOf(propertyA, propertyC)
+    fun `should not show properties without latitude and longitude`() {
+        val expectedProperties = listOf(salePropertyA, salePropertyC)
 
         val propertiesWithoutLatAndLong =
-            listOf(propertyA, Property("bId", listOf("bImage")), propertyC)
+            listOf(
+                salePropertyA,
+                Property(
+                    "bId",
+                    listOf("bImage"),
+                    price = "123123123213",
+                    businessType = BusinessType.SALE
+                ),
+                salePropertyC
+            )
 
         returnFromRepository(0, limitOffSet, propertiesWithoutLatAndLong)
 
@@ -112,6 +177,84 @@ class MainsScreenPresenterTest {
 
         verify(atLeast = 1) { mainScreenView.showProperties(eq(expectedProperties)) }
     }
+
+
+    @Test
+    fun `should not show ZAP properties for sale when usable area is zero`() {
+        val expectedProperties = listOf(salePropertyA, salePropertyC)
+
+        val propertiesListWithOnePropertyWithZeroUsableAre =
+            listOf(
+                salePropertyA,
+                Property(
+                    "bId",
+                    listOf("bImage"),
+                    latitude = 1.2,
+                    longitude = 1.2,
+                    price = "123123213",
+                    businessType = BusinessType.SALE
+                ),
+                salePropertyC
+            )
+
+        returnFromRepository(0, limitOffSet, propertiesListWithOnePropertyWithZeroUsableAre)
+
+        mainScreenPresenter.getPropertiesList()
+
+        verify(atLeast = 1) { mainScreenView.showProperties(eq(expectedProperties)) }
+    }
+
+    @Test
+    fun `should not show ZAP properties for sale when it is for sale and price is bellow 3 500 reais`() {
+        val expectedProperties = listOf(salePropertyA, salePropertyC)
+
+        val propertiesListWithOnePropertyWithPriceBellow3500reais =
+            listOf(
+                salePropertyA,
+                Property(
+                    "bId",
+                    listOf("bImage"),
+                    latitude = 1.2,
+                    longitude = 1.2,
+                    usableAreas = 213,
+                    businessType = BusinessType.SALE
+                ),
+                salePropertyC
+            )
+
+        returnFromRepository(0, limitOffSet, propertiesListWithOnePropertyWithPriceBellow3500reais)
+
+        mainScreenPresenter.getPropertiesList()
+
+        verify(atLeast = 1) { mainScreenView.showProperties(eq(expectedProperties)) }
+    }
+
+    @Test
+    fun `should not show ZAP property when it is for sale, inside Bounding Box and price less than 3 150 reais`() {
+        val expectedProperties = listOf(salePropertyA, salePropertyC)
+
+        val propertiesListWithOnePropertyWithPriceBellow3500reais =
+            listOf(
+                salePropertyA,
+                Property(
+                    "bId",
+                    listOf("bImage"),
+                    latitude = 1.2,
+                    longitude = 1.2,
+                    usableAreas = 213,
+                    businessType = BusinessType.SALE,
+                    price = "315000"
+                ),
+                salePropertyC
+            )
+
+        returnFromRepository(0, limitOffSet, propertiesListWithOnePropertyWithPriceBellow3500reais)
+
+        mainScreenPresenter.getPropertiesList()
+
+        verify(atLeast = 1) { mainScreenView.showProperties(eq(expectedProperties)) }
+    }
+
 
     private fun assertPageOneProperties() {
         returnFromRepository(20, limitOffSet, pageTwoExpectedProperties)
@@ -132,7 +275,7 @@ class MainsScreenPresenterTest {
     private fun returnFromRepository(offSet: Int, limit: Int, expectedProperties: List<Property>) {
         slot<((List<Property>) -> Unit)>().let { callback ->
             every {
-                propertyRepository.getProperties (
+                propertyRepository.getProperties(
                     offSet = offSet,
                     limit = limit,
                     onError = any(),
@@ -147,7 +290,7 @@ class MainsScreenPresenterTest {
     private fun returnFromRepositoryWithError() {
         slot<(() -> Unit)>().let { callback ->
             every {
-                propertyRepository.getProperties (
+                propertyRepository.getProperties(
                     offSet = 0,
                     limit = limitOffSet,
                     onError = capture(callback),
