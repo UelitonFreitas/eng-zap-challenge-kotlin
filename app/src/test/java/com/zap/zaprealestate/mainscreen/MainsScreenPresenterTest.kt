@@ -22,11 +22,17 @@ class MainsScreenPresenterTest {
 
     private val limitOffSet = 20
 
+    private val minLongitude = -46.693419
+    private val maxLongitude = -46.641146
+
+    private val minLatitude=  -23.568704
+    private val maxLatitude = -23.546686
+
     private val salePropertyA = Property(
         "aId",
         listOf("aImage"),
-        latitude = 1.0,
-        longitude = 1.0,
+        latitude = minLatitude,
+        longitude = minLongitude,
         usableAreas = 100,
         price = "350001",
         businessType = BusinessType.SALE
@@ -34,8 +40,8 @@ class MainsScreenPresenterTest {
     private val salePropertyB = Property(
         "bId",
         listOf("bImage"),
-        latitude = 1.2,
-        longitude = 1.2,
+        latitude = minLatitude,
+        longitude = minLongitude,
         usableAreas = 50,
         price = "3150001",
         businessType = BusinessType.SALE
@@ -43,8 +49,8 @@ class MainsScreenPresenterTest {
     private val salePropertyC = Property(
         "bcId",
         listOf("cImage"),
-        latitude = 1.3,
-        longitude = 1.3,
+        latitude = minLatitude,
+        longitude = minLongitude,
         usableAreas = 200,
         price = "123213213123",
         businessType = BusinessType.SALE
@@ -53,8 +59,8 @@ class MainsScreenPresenterTest {
     private val rentPropertyA = Property(
         "aId",
         listOf("aImage"),
-        latitude = 1.22,
-        longitude = 1.2,
+        latitude = minLatitude,
+        longitude = minLongitude,
         usableAreas = 212,
         price = "12331",
         businessType = BusinessType.RENT
@@ -63,8 +69,8 @@ class MainsScreenPresenterTest {
     private val rentPropertyB = Property(
         "bId",
         listOf("bImage"),
-        latitude = 1.1132,
-        longitude = 1.1232,
+        latitude = minLatitude,
+        longitude = minLongitude,
         usableAreas = 213,
         price = "123",
         businessType = BusinessType.RENT
@@ -73,8 +79,8 @@ class MainsScreenPresenterTest {
     private val rentPropertyC = Property(
         "cId",
         listOf("cImage"),
-        latitude = 1.2323,
-        longitude = 1.212,
+        latitude = minLatitude,
+        longitude = minLongitude,
         usableAreas = 21123123,
         price = "315231231",
         businessType = BusinessType.RENT
@@ -166,6 +172,7 @@ class MainsScreenPresenterTest {
                     "bId",
                     listOf("bImage"),
                     price = "123123123213",
+                    usableAreas = 50,
                     businessType = BusinessType.SALE
                 ),
                 salePropertyC
@@ -178,6 +185,109 @@ class MainsScreenPresenterTest {
         verify(atLeast = 1) { mainScreenView.showProperties(eq(expectedProperties)) }
     }
 
+    @Test
+    fun `should not show properties with latitude less than minimum`() {
+        val expectedProperties = listOf(salePropertyA, salePropertyC)
+
+        val properties =
+            listOf(
+                salePropertyA,
+                Property(
+                    "bId",
+                    listOf("bImage"),
+                    latitude = minLatitude - 1.0,
+                    longitude = minLongitude,
+                    price = "123123123213",
+                    usableAreas = 50,
+                    businessType = BusinessType.SALE
+                ),
+                salePropertyC
+            )
+
+        returnFromRepository(0, limitOffSet, properties)
+
+        mainScreenPresenter.getPropertiesList()
+
+        verify(atLeast = 1) { mainScreenView.showProperties(eq(expectedProperties)) }
+    }
+
+    @Test
+    fun `should not show properties with latitude greater than max`() {
+        val expectedProperties = listOf(salePropertyA, salePropertyC)
+
+        val properties =
+            listOf(
+                salePropertyA,
+                Property(
+                    "bId",
+                    listOf("bImage"),
+                    latitude = maxLatitude + 1,
+                    longitude = minLongitude,
+                    price = "123123123213",
+                    usableAreas = 50,
+                    businessType = BusinessType.SALE
+                ),
+                salePropertyC
+            )
+
+        returnFromRepository(0, limitOffSet, properties)
+
+        mainScreenPresenter.getPropertiesList()
+
+        verify(atLeast = 1) { mainScreenView.showProperties(eq(expectedProperties)) }
+    }
+
+    @Test
+    fun `should not show properties with longitude less than minimum`() {
+        val expectedProperties = listOf(salePropertyA, salePropertyC)
+
+        val properties =
+            listOf(
+                salePropertyA,
+                Property(
+                    "bId",
+                    listOf("bImage"),
+                    latitude = minLatitude,
+                    longitude = minLongitude - 1,
+                    price = "123123123213",
+                    usableAreas = 50,
+                    businessType = BusinessType.SALE
+                ),
+                salePropertyC
+            )
+
+        returnFromRepository(0, limitOffSet, properties)
+
+        mainScreenPresenter.getPropertiesList()
+
+        verify(atLeast = 1) { mainScreenView.showProperties(eq(expectedProperties)) }
+    }
+
+    @Test
+    fun `should not show properties with longitude greater than max`() {
+        val expectedProperties = listOf(salePropertyA, salePropertyC)
+
+        val properties =
+            listOf(
+                salePropertyA,
+                Property(
+                    "bId",
+                    listOf("bImage"),
+                    latitude = minLatitude,
+                    longitude = maxLongitude + 1,
+                    price = "123123123213",
+                    usableAreas = 50,
+                    businessType = BusinessType.SALE
+                ),
+                salePropertyC
+            )
+
+        returnFromRepository(0, limitOffSet, properties)
+
+        mainScreenPresenter.getPropertiesList()
+
+        verify(atLeast = 1) { mainScreenView.showProperties(eq(expectedProperties)) }
+    }
 
     @Test
     fun `should not show ZAP properties for sale when usable area is zero`() {
@@ -214,8 +324,8 @@ class MainsScreenPresenterTest {
                 Property(
                     "bId",
                     listOf("bImage"),
-                    latitude = 1.2,
-                    longitude = 1.2,
+                    latitude = minLongitude,
+                    longitude = minLongitude,
                     usableAreas = 213,
                     businessType = BusinessType.SALE
                 ),
