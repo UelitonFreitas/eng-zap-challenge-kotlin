@@ -11,7 +11,7 @@ import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
 
-class MainsScreenPresenterTest {
+class ZapPresenterTest {
     @MockK
     private lateinit var mainScreenView: MainScreenProtocols.View
 
