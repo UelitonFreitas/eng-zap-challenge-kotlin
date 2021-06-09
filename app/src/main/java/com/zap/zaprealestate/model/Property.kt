@@ -6,7 +6,9 @@ data class Property(val id : String,
                     val longitude: Double = 0.0,
                     val usableAreas: Long = 0,
                     val price: String = "",
-                    val businessType: BusinessType
+                    val businessType: BusinessType,
+                    val monthlyCondoFee: String = "",
+                    val rentalTotalPrice: String = ""
 )
 
 enum class BusinessType{
