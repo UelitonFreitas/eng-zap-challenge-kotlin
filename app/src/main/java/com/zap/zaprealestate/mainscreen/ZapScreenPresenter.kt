@@ -4,7 +4,7 @@ import com.zap.zaprealestate.model.BusinessType
 import com.zap.zaprealestate.model.Property
 import com.zap.zaprealestate.model.PropertyRepository
 
-class MainScreenPresenter(
+class ZapScreenPresenter(
     private val view: MainScreenProtocols.View,
     private val propertyRepository: PropertyRepository
 ) :
@@ -20,7 +20,6 @@ class MainScreenPresenter(
         with(this.properties) {
             addAll(
                 properties
-                    .filter(::thereIsLocation)
                     .filter(::salePropertyRestrictions)
             )
             takeIf { it.isNotEmpty() }?.let {
@@ -34,12 +33,20 @@ class MainScreenPresenter(
 
     private fun hasUsableAreaMinimumPrice(property: Property) = try {
             when (property.businessType) {
-                BusinessType.SALE -> thereIsUsableAre(property) && property.price.toLong() > 350000
+                BusinessType.SALE -> thereIsUsableAre(property) && (property.price.toLong() > calculateSalePropertyPrice(property))
                 else -> true
             }
         } catch (e: Throwable) {
             false
         }
+
+    private fun calculateSalePropertyPrice(property: Property): Long {
+        val minimumPrice = 350000L
+        return when {
+            property.businessType == BusinessType.SALE && isPropertyInExpectedRange(property) -> minimumPrice - (minimumPrice * 0.1).toLong()
+            else -> minimumPrice
+        }
+    }
 
     private fun thereIsUsableAre(it: Property) = it.usableAreas != 0L
 

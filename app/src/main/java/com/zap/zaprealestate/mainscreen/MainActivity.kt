@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity(), MainScreenProtocols.View {
 
     private val propertiesList by lazy { findViewById<RecyclerView>(R.id.recycler_view_properties) }
     private val swipeLayout by lazy { findViewById<SwipeRefreshLayout>(R.id.swipe_container) }
-    private val presenter = MainScreenPresenter(this, PropertiesRepositoryImpl())
+    private val presenter = ZapScreenPresenter(this, PropertiesRepositoryImpl())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -18,7 +18,7 @@ class MainsScreenPresenterTest {
     @MockK
     private lateinit var propertyRepository: PropertyRepository
 
-    private lateinit var mainScreenPresenter: MainScreenPresenter
+    private lateinit var zapScreenPresenter: ZapScreenPresenter
 
     private val limitOffSet = 20
 
@@ -96,7 +96,7 @@ class MainsScreenPresenterTest {
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
 
-        mainScreenPresenter = MainScreenPresenter(mainScreenView, propertyRepository)
+        zapScreenPresenter = ZapScreenPresenter(mainScreenView, propertyRepository)
     }
 
     @Test
@@ -111,7 +111,7 @@ class MainsScreenPresenterTest {
 
         returnFromRepository(0, limitOffSet, expectedProperties)
 
-        mainScreenPresenter.getPropertiesList()
+        zapScreenPresenter.getPropertiesList()
 
         verify { mainScreenView.showEmptyList() }
     }
@@ -120,7 +120,7 @@ class MainsScreenPresenterTest {
     fun `should show error message when there was an error when loading properties`() {
         returnFromRepositoryWithError()
 
-        mainScreenPresenter.getPropertiesList()
+        zapScreenPresenter.getPropertiesList()
 
         verify { mainScreenView.showErrorMessage() }
     }
@@ -137,7 +137,7 @@ class MainsScreenPresenterTest {
     fun `should show loading on view when fetching properties`() {
         returnFromRepository(0, limitOffSet, pageZeroExpectedProperties)
 
-        mainScreenPresenter.getPropertiesList()
+        zapScreenPresenter.getPropertiesList()
 
         verify(exactly = 1) { mainScreenView.showLoading() }
     }
@@ -146,7 +146,7 @@ class MainsScreenPresenterTest {
     fun `should hide loading on view when fetching properties`() {
         returnFromRepository(0, limitOffSet, pageZeroExpectedProperties)
 
-        mainScreenPresenter.getPropertiesList()
+        zapScreenPresenter.getPropertiesList()
 
         verify(atLeast = 1) { mainScreenView.hideLoading() }
     }
@@ -155,7 +155,7 @@ class MainsScreenPresenterTest {
     fun `should hide loading on view when was an error`() {
         returnFromRepositoryWithError()
 
-        mainScreenPresenter.getPropertiesList()
+        zapScreenPresenter.getPropertiesList()
 
         verify(atLeast = 1) { mainScreenView.hideLoading() }
     }
@@ -180,7 +180,7 @@ class MainsScreenPresenterTest {
 
         returnFromRepository(0, limitOffSet, propertiesWithoutLatAndLong)
 
-        mainScreenPresenter.getPropertiesList()
+        zapScreenPresenter.getPropertiesList()
 
         verify(atLeast = 1) { mainScreenView.showProperties(eq(expectedProperties)) }
     }
@@ -206,7 +206,7 @@ class MainsScreenPresenterTest {
 
         returnFromRepository(0, limitOffSet, properties)
 
-        mainScreenPresenter.getPropertiesList()
+        zapScreenPresenter.getPropertiesList()
 
         verify(atLeast = 1) { mainScreenView.showProperties(eq(expectedProperties)) }
     }
@@ -232,7 +232,7 @@ class MainsScreenPresenterTest {
 
         returnFromRepository(0, limitOffSet, properties)
 
-        mainScreenPresenter.getPropertiesList()
+        zapScreenPresenter.getPropertiesList()
 
         verify(atLeast = 1) { mainScreenView.showProperties(eq(expectedProperties)) }
     }
@@ -258,7 +258,7 @@ class MainsScreenPresenterTest {
 
         returnFromRepository(0, limitOffSet, properties)
 
-        mainScreenPresenter.getPropertiesList()
+        zapScreenPresenter.getPropertiesList()
 
         verify(atLeast = 1) { mainScreenView.showProperties(eq(expectedProperties)) }
     }
@@ -284,7 +284,7 @@ class MainsScreenPresenterTest {
 
         returnFromRepository(0, limitOffSet, properties)
 
-        mainScreenPresenter.getPropertiesList()
+        zapScreenPresenter.getPropertiesList()
 
         verify(atLeast = 1) { mainScreenView.showProperties(eq(expectedProperties)) }
     }
@@ -299,8 +299,8 @@ class MainsScreenPresenterTest {
                 Property(
                     "bId",
                     listOf("bImage"),
-                    latitude = 1.2,
-                    longitude = 1.2,
+                    latitude = minLatitude,
+                    longitude = minLongitude,
                     price = "123123213",
                     businessType = BusinessType.SALE
                 ),
@@ -309,7 +309,7 @@ class MainsScreenPresenterTest {
 
         returnFromRepository(0, limitOffSet, propertiesListWithOnePropertyWithZeroUsableAre)
 
-        mainScreenPresenter.getPropertiesList()
+        zapScreenPresenter.getPropertiesList()
 
         verify(atLeast = 1) { mainScreenView.showProperties(eq(expectedProperties)) }
     }
@@ -327,6 +327,7 @@ class MainsScreenPresenterTest {
                     latitude = minLongitude,
                     longitude = minLongitude,
                     usableAreas = 213,
+                    price = "34999",
                     businessType = BusinessType.SALE
                 ),
                 salePropertyC
@@ -334,13 +335,13 @@ class MainsScreenPresenterTest {
 
         returnFromRepository(0, limitOffSet, propertiesListWithOnePropertyWithPriceBellow3500reais)
 
-        mainScreenPresenter.getPropertiesList()
+        zapScreenPresenter.getPropertiesList()
 
         verify(atLeast = 1) { mainScreenView.showProperties(eq(expectedProperties)) }
     }
 
     @Test
-    fun `should not show ZAP property when it is for sale, inside Bounding Box and price less than 3 150 reais`() {
+    fun `should not show ZAP property when it is for sale inside bounding box and price less than 3 150 reais`() {
         val expectedProperties = listOf(salePropertyA, salePropertyC)
 
         val propertiesListWithOnePropertyWithPriceBellow3500reais =
@@ -349,18 +350,39 @@ class MainsScreenPresenterTest {
                 Property(
                     "bId",
                     listOf("bImage"),
-                    latitude = 1.2,
-                    longitude = 1.2,
+                    latitude = minLatitude,
+                    longitude = minLongitude,
                     usableAreas = 213,
                     businessType = BusinessType.SALE,
-                    price = "315000"
+                    price = "3149"
                 ),
                 salePropertyC
             )
 
         returnFromRepository(0, limitOffSet, propertiesListWithOnePropertyWithPriceBellow3500reais)
 
-        mainScreenPresenter.getPropertiesList()
+        zapScreenPresenter.getPropertiesList()
+
+        verify(atLeast = 1) { mainScreenView.showProperties(eq(expectedProperties)) }
+    }
+
+    @Test
+    fun `should show ZAP property when it is for sale, inside Bounding Box and price is 10% cheaper, between 3 150 and 3 500 reais`() {
+
+        val property = Property(
+            "bId",
+            listOf("bImage"),
+            latitude = minLatitude,
+            longitude = minLongitude,
+            usableAreas = 213,
+            businessType = BusinessType.SALE,
+            price = "315001"
+        )
+        val expectedProperties = listOf(salePropertyA, property, salePropertyC)
+
+        returnFromRepository(0, limitOffSet, expectedProperties)
+
+        zapScreenPresenter.getPropertiesList()
 
         verify(atLeast = 1) { mainScreenView.showProperties(eq(expectedProperties)) }
     }
@@ -369,7 +391,7 @@ class MainsScreenPresenterTest {
     private fun assertPageOneProperties() {
         returnFromRepository(20, limitOffSet, pageTwoExpectedProperties)
 
-        mainScreenPresenter.loadNextPropertiesOffset()
+        zapScreenPresenter.loadNextPropertiesOffset()
 
         verify(atLeast = 1) { mainScreenView.showProperties(eq(pageZeroExpectedProperties + pageTwoExpectedProperties)) }
     }
@@ -377,7 +399,7 @@ class MainsScreenPresenterTest {
     private fun assertInitialPropertiesList() {
         returnFromRepository(0, limitOffSet, pageZeroExpectedProperties)
 
-        mainScreenPresenter.getPropertiesList()
+        zapScreenPresenter.getPropertiesList()
 
         verify { mainScreenView.showProperties(eq(pageZeroExpectedProperties)) }
     }

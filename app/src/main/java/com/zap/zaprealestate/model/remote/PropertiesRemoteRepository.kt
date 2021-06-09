@@ -55,7 +55,7 @@ class PropertiesRepositoryImpl : PropertyRepository {
                 fromIndex >= properties.lastIndex -> {
                     onSuccess(emptyList())
                 }
-                toIndex > properties.lastIndex-> onSuccess(
+                toIndex > properties.lastIndex -> onSuccess(
                     properties.subList(
                         fromIndex,
                         properties.lastIndex
@@ -95,7 +95,18 @@ class PropertiesRepositoryImpl : PropertyRepository {
 
                 val properties =
                     propertiesResponse?.map {
-                        it.run { Property(id, images, businessType = BusinessType.SALE) }
+                        it.run {
+
+                            Property(
+                                id = id,
+                                images = images,
+                                businessType = BusinessType.SALE,
+                                latitude = address.geoLocation.location.lat,
+                                longitude = address.geoLocation.location.lon,
+                                usableAreas = usableAreas,
+                                price = pricingInfos.price
+                            )
+                        }
                     } ?: emptyList()
 
                 properties.takeIf {
