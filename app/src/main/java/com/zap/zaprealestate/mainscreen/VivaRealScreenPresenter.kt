@@ -26,7 +26,7 @@ class VivaRealScreenPresenter(
     }
 
     private fun salePropertyRestrictions(property: Property) =
-        thereIsLocation(property) && hasNumericMonthlyCondoFee(property)
+        property.thereIsLocation() && hasNumericMonthlyCondoFee(property)
 
     private fun hasNumericMonthlyCondoFee(property: Property) = try {
         when (property.businessType) {
@@ -41,24 +41,10 @@ class VivaRealScreenPresenter(
 
     private fun getMaximumMonthlyCondoFee(property: Property) = run {
         property.rentalTotalPrice.toLong() * when {
-            isPropertyInExpectedRange(property) -> 0.5
+            property.isPropertyInExpectedRange() -> 0.5
             else -> 0.3
         }
     }
-
-    private fun isPropertyInExpectedRange(property: Property): Boolean {
-
-        val minLongitude = -46.693419
-        val maxLongitude = -46.641146
-
-        val minLatitude = -23.568704
-        val maxLatitude = -23.546686
-
-        return property.run { latitude in minLatitude..maxLatitude && longitude in minLongitude..maxLongitude }
-    }
-
-    private fun thereIsLocation(property: Property) =
-        property.latitude != 0.0 && property.longitude != 0.0
 
     override fun getPropertiesList() {
         view.showLoading()

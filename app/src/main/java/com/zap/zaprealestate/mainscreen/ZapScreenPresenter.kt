@@ -29,7 +29,7 @@ class ZapScreenPresenter(
     }
 
     private fun salePropertyRestrictions(property: Property) =
-        hasUsableAreaMinimumPrice(property) && isPropertyInExpectedRange(property)
+        hasUsableAreaMinimumPrice(property) && property.isPropertyInExpectedRange()
 
     private fun hasUsableAreaMinimumPrice(property: Property) = try {
             when (property.businessType) {
@@ -43,30 +43,13 @@ class ZapScreenPresenter(
     private fun calculateSalePropertyPrice(property: Property): Long {
         val minimumPrice = 350000L
         return when {
-            property.businessType == BusinessType.SALE && isPropertyInExpectedRange(property) -> minimumPrice - (minimumPrice * 0.1).toLong()
+            property.businessType == BusinessType.SALE && property.isPropertyInExpectedRange() -> minimumPrice - (minimumPrice * 0.1).toLong()
             else -> minimumPrice
         }
     }
 
     private fun thereIsUsableAre(it: Property) = it.usableAreas != 0L
 
-    private fun isPropertyInExpectedRange(property: Property): Boolean {
-
-        val minLongitude =  -46.693419
-        val maxLongitude = -46.641146
-
-        val minLatitude=  -23.568704
-        val maxLatitude = -23.546686
-
-        val isInRange = property.run {
-            latitude in minLatitude..maxLatitude && longitude in minLongitude..maxLongitude
-        }
-
-        return thereIsLocation(property) && isInRange
-    }
-
-    private fun thereIsLocation(property: Property) =
-        property.latitude != 0.0 && property.longitude != 0.0
 
     override fun getPropertiesList() {
         view.showLoading()
