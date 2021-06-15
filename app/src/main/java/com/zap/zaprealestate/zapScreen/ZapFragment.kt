@@ -20,6 +20,8 @@ class ZapFragment : Fragment(), PropertyScreenProtocols.View {
     private lateinit var propertiesList: RecyclerView
     private lateinit var swipeLayout: SwipeRefreshLayout
     private lateinit var presenter: ZapScreenPresenter
+    private val propertyAdapter = PropertiesAdapter()
+    private val viewManager = LinearLayoutManager(this.activity)
 
     companion object {
         fun getInstance() : ZapFragment {
@@ -48,22 +50,11 @@ class ZapFragment : Fragment(), PropertyScreenProtocols.View {
             android.R.color.holo_green_light,
             android.R.color.holo_orange_light,
             android.R.color.holo_red_light)
-    }
 
-
-    override fun onResume() {
-        super.onResume()
-
-        presenter.getPropertiesList()
-    }
-
-    override fun showProperties(properties: List<Property>) {
-        val viewAdapter = PropertiesAdapter(properties)
-        val viewManager = LinearLayoutManager(this.activity)
 
         propertiesList.apply {
             layoutManager = viewManager
-            adapter = viewAdapter
+            adapter = propertyAdapter
             setHasFixedSize(true)
         }
 
@@ -77,6 +68,17 @@ class ZapFragment : Fragment(), PropertyScreenProtocols.View {
                 }
             }
         })
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+
+        presenter.getPropertiesList()
+    }
+
+    override fun showProperties(properties: List<Property>) {
+        propertyAdapter.updateProperties(properties)
     }
 
     override fun showEmptyList() {

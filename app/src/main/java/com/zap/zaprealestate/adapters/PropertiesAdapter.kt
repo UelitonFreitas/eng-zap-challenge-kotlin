@@ -10,14 +10,10 @@ import com.squareup.picasso.Picasso
 import com.zap.zaprealestate.R
 import com.zap.zaprealestate.model.Property
 
-class PropertiesAdapter(private val properties: List<Property>): RecyclerView.Adapter<PropertiesAdapter.PropertyViewHolder>() {
+class PropertiesAdapter(private var properties: List<Property> = emptyList()): RecyclerView.Adapter<PropertiesAdapter.PropertyViewHolder>() {
 
     class PropertyViewHolder(private val layout: ConstraintLayout) :
         RecyclerView.ViewHolder(layout) {
-
-        fun setCharacter(propertie: Property) {
-            layout.findViewById<TextView>(R.id.text_view_property_price).text = propertie.id
-        }
 
         fun setProperty(property: Property) {
             layout.findViewById<TextView>(R.id.text_view_property_price).text = property.id
@@ -32,6 +28,11 @@ class PropertiesAdapter(private val properties: List<Property>): RecyclerView.Ad
                     .into(this)
             }
         }
+    }
+
+    fun updateProperties(properties: List<Property>){
+        this.properties = properties
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PropertyViewHolder {
