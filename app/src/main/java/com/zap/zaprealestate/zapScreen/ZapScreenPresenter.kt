@@ -1,14 +1,16 @@
-package com.zap.zaprealestate.mainscreen
+package com.zap.zaprealestate.zapScreen
 
+import com.zap.zaprealestate.PropertyScreenProtocols
+import com.zap.zaprealestate.mainscreen.isPropertyInExpectedRange
 import com.zap.zaprealestate.model.BusinessType
 import com.zap.zaprealestate.model.Property
 import com.zap.zaprealestate.model.PropertyRepository
 
 class ZapScreenPresenter(
-    private val view: MainScreenProtocols.View,
+    private val view: PropertyScreenProtocols.View,
     private val propertyRepository: PropertyRepository
 ) :
-    MainScreenProtocols.Presenter {
+    PropertyScreenProtocols.Presenter {
 
     private var actualOffSet = 0
     private val limitOffSet = 20

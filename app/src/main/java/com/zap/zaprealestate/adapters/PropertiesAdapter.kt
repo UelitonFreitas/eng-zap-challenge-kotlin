@@ -1,4 +1,4 @@
-package com.zap.zaprealestate.mainscreen.adpters
+package com.zap.zaprealestate.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
