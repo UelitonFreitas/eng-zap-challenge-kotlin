@@ -20,7 +20,7 @@ class VivaRealFragment : Fragment(), PropertyScreenProtocols.View {
     private lateinit var propertiesList: RecyclerView
     private lateinit var swipeLayout: SwipeRefreshLayout
     private lateinit var presenter: VivaRealScreenPresenter
-    private val propertyAdapter = PropertiesAdapter()
+    private val propertyAdapter = PropertiesAdapter(onPropertyClick = ::onPropertyClick)
     private val viewManager = LinearLayoutManager(this.activity)
 
     companion object {
@@ -94,5 +94,9 @@ class VivaRealFragment : Fragment(), PropertyScreenProtocols.View {
 
     override fun hideLoading() {
         swipeLayout.isRefreshing = false
+    }
+
+    private fun onPropertyClick(property: Property){
+        Toast.makeText(this.activity, property.toString(), Toast.LENGTH_SHORT).show()
     }
 }

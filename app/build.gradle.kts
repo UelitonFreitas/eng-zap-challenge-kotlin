@@ -54,9 +54,9 @@ dependencies {
     implementation(Dependencies.loggingInterceptor)
     implementation(Dependencies.picasso)
     implementation(Dependencies.Android.swipeToRefresh)
-    implementation("com.android.support:design:24.2.0")
-    implementation("com.google.android.material:material:1.3.0")
-    implementation("androidx.viewpager:viewpager:1.0.0")
+    implementation(Dependencies.Android.androidSupportDesign)
+    implementation(Dependencies.Android.androidMaterialDesign)
+    implementation(Dependencies.Android.androidXViewPage)
 
     testImplementation(Dependencies.Test.junit)
     testImplementation(Dependencies.Test.mockK)
