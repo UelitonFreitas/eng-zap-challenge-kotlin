@@ -100,11 +100,14 @@ class PropertiesRepositoryImpl : PropertyRepository {
                             Property(
                                 id = id,
                                 images = images,
-                                businessType = BusinessType.SALE,
+                                businessType = getBusinessType(pricingInfos.businessType),
                                 latitude = address.geoLocation.location.lat,
                                 longitude = address.geoLocation.location.lon,
                                 usableAreas = usableAreas,
-                                price = pricingInfos.price
+                                price = pricingInfos.price,
+                                bathrooms = bathrooms,
+                                bedrooms = bedrooms
+
                             )
                         }
                     } ?: emptyList()
@@ -123,6 +126,11 @@ class PropertiesRepositoryImpl : PropertyRepository {
             }
         })
     }
+
+    private fun getBusinessType(businessType: String) = when (businessType) {
+            "SALE" -> BusinessType.SALE
+            else -> BusinessType.RENT
+        }
 
     private fun cacheProperties(it: List<Property>) {
         cachedProperties = it

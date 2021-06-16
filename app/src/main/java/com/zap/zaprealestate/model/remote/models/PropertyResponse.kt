@@ -7,7 +7,9 @@ data class PropertyResponse(
     @SerializedName("images") val images: List<String>,
     @SerializedName("usableAreas") val usableAreas: Long,
     @SerializedName("address") val address: AddressResponse,
-    @SerializedName("pricingInfos") val pricingInfos: PricingInfos
+    @SerializedName("pricingInfos") val pricingInfos: PricingInfos,
+    @SerializedName("bathrooms") val bathrooms: Int,
+    @SerializedName("bedrooms") val bedrooms: Int,
 )
 
 data class AddressResponse(
