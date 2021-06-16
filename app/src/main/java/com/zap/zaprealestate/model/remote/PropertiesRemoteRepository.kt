@@ -1,6 +1,7 @@
 package com.zap.zaprealestate.model.remote
 
 import android.util.Log
+import com.zap.zaprealestate.model.BusinessType
 import com.zap.zaprealestate.model.Property
 import com.zap.zaprealestate.model.PropertyRepository
 import com.zap.zaprealestate.model.remote.models.PropertyResponse
@@ -54,7 +55,7 @@ class PropertiesRepositoryImpl : PropertyRepository {
                 fromIndex >= properties.lastIndex -> {
                     onSuccess(emptyList())
                 }
-                toIndex > properties.lastIndex-> onSuccess(
+                toIndex > properties.lastIndex -> onSuccess(
                     properties.subList(
                         fromIndex,
                         properties.lastIndex
@@ -94,7 +95,21 @@ class PropertiesRepositoryImpl : PropertyRepository {
 
                 val properties =
                     propertiesResponse?.map {
-                        it.run { Property(id, images) }
+                        it.run {
+
+                            Property(
+                                id = id,
+                                images = images,
+                                businessType = getBusinessType(pricingInfos.businessType),
+                                latitude = address.geoLocation.location.lat,
+                                longitude = address.geoLocation.location.lon,
+                                usableAreas = usableAreas,
+                                price = pricingInfos.price,
+                                bathrooms = bathrooms,
+                                bedrooms = bedrooms
+
+                            )
+                        }
                     } ?: emptyList()
 
                 properties.takeIf {
@@ -111,6 +126,11 @@ class PropertiesRepositoryImpl : PropertyRepository {
             }
         })
     }
+
+    private fun getBusinessType(businessType: String) = when (businessType) {
+            "SALE" -> BusinessType.SALE
+            else -> BusinessType.RENT
+        }
 
     private fun cacheProperties(it: List<Property>) {
         cachedProperties = it

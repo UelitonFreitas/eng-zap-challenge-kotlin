@@ -1,8 +1,8 @@
-package com.zap.zaprealestate.mainscreen
+package com.zap.zaprealestate
 
 import com.zap.zaprealestate.model.Property
 
-interface MainScreenProtocols {
+interface PropertyScreenProtocols {
     interface View {
         fun showProperties(properties: List<Property>)
         fun showEmptyList()
