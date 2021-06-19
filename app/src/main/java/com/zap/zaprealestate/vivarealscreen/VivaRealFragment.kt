@@ -8,18 +8,16 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.zap.zaprealestate.PropertyScreenProtocols
+import com.zap.zaprealestate.PropertiesScreenProtocols
 import com.zap.zaprealestate.R
 import com.zap.zaprealestate.adapters.PropertiesAdapter
 import com.zap.zaprealestate.detailscreen.PropertyDetailScreen
 import com.zap.zaprealestate.model.Property
 import com.zap.zaprealestate.model.remote.PropertiesRepositoryImpl
+import kotlinx.android.synthetic.main.properties_fragment.*
 
-class VivaRealFragment : Fragment(), PropertyScreenProtocols.View {
+class VivaRealFragment : Fragment(), PropertiesScreenProtocols.View {
 
-    private lateinit var propertiesList: RecyclerView
-    private lateinit var swipeLayout: SwipeRefreshLayout
     private lateinit var presenter: VivaRealScreenPresenter
     private val propertyAdapter = PropertiesAdapter(onPropertyClick = ::onPropertyClick)
     private val viewManager = LinearLayoutManager(this.activity)
@@ -39,26 +37,24 @@ class VivaRealFragment : Fragment(), PropertyScreenProtocols.View {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        propertiesList = view.findViewById(R.id.recycler_view_properties)
-        swipeLayout = view.findViewById(R.id.swipe_container)
         presenter = VivaRealScreenPresenter(this, PropertiesRepositoryImpl())
 
-        swipeLayout.setOnRefreshListener {
+        swipe_container.setOnRefreshListener {
             presenter.getPropertiesList()
         }
 
-        swipeLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
+        swipe_container.setColorSchemeResources(android.R.color.holo_blue_bright,
             android.R.color.holo_green_light,
             android.R.color.holo_orange_light,
             android.R.color.holo_red_light)
 
-        propertiesList.apply {
+        recycler_view_properties.apply {
             layoutManager = viewManager
             adapter = propertyAdapter
             setHasFixedSize(true)
         }
 
-        propertiesList.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+        recycler_view_properties.addOnScrollListener(object : RecyclerView.OnScrollListener(){
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 val canScrollVerticallyFromTopToBottom = recyclerView.canScrollVertically(1)
@@ -90,11 +86,11 @@ class VivaRealFragment : Fragment(), PropertyScreenProtocols.View {
     }
 
     override fun showLoading() {
-        swipeLayout.isRefreshing = true
+        swipe_container.isRefreshing = true
     }
 
     override fun hideLoading() {
-        swipeLayout.isRefreshing = false
+        swipe_container.isRefreshing = false
     }
 
     override fun showPropertyDetail(property: Property) {

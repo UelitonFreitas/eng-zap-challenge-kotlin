@@ -1,6 +1,6 @@
 package com.zap.zaprealestate.mainscreen
 
-import com.zap.zaprealestate.PropertyScreenProtocols
+import com.zap.zaprealestate.PropertiesScreenProtocols
 import com.zap.zaprealestate.model.BusinessType
 import com.zap.zaprealestate.model.Property
 import com.zap.zaprealestate.model.PropertyRepository
@@ -15,7 +15,7 @@ import org.junit.Test
 
 class VivaRealPresenterTest {
     @MockK
-    private lateinit var propertyScreenView: PropertyScreenProtocols.View
+    private lateinit var propertiesScreenView: PropertiesScreenProtocols.View
 
     @MockK
     private lateinit var propertyRepository: PropertyRepository
@@ -106,7 +106,7 @@ class VivaRealPresenterTest {
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
 
-        vivaRealScreenPresenter = VivaRealScreenPresenter(propertyScreenView, propertyRepository)
+        vivaRealScreenPresenter = VivaRealScreenPresenter(propertiesScreenView, propertyRepository)
     }
 
     @Test
@@ -123,7 +123,7 @@ class VivaRealPresenterTest {
 
         vivaRealScreenPresenter.getPropertiesList()
 
-        verify { propertyScreenView.showEmptyList() }
+        verify { propertiesScreenView.showEmptyList() }
     }
 
     @Test
@@ -132,7 +132,7 @@ class VivaRealPresenterTest {
 
         vivaRealScreenPresenter.getPropertiesList()
 
-        verify { propertyScreenView.showErrorMessage() }
+        verify { propertiesScreenView.showErrorMessage() }
     }
 
 
@@ -149,7 +149,7 @@ class VivaRealPresenterTest {
 
         vivaRealScreenPresenter.getPropertiesList()
 
-        verify(exactly = 1) { propertyScreenView.showLoading() }
+        verify(exactly = 1) { propertiesScreenView.showLoading() }
     }
 
     @Test
@@ -158,7 +158,7 @@ class VivaRealPresenterTest {
 
         vivaRealScreenPresenter.getPropertiesList()
 
-        verify(atLeast = 1) { propertyScreenView.hideLoading() }
+        verify(atLeast = 1) { propertiesScreenView.hideLoading() }
     }
 
     @Test
@@ -167,7 +167,7 @@ class VivaRealPresenterTest {
 
         vivaRealScreenPresenter.getPropertiesList()
 
-        verify(atLeast = 1) { propertyScreenView.hideLoading() }
+        verify(atLeast = 1) { propertiesScreenView.hideLoading() }
     }
 
 
@@ -192,7 +192,7 @@ class VivaRealPresenterTest {
 
         vivaRealScreenPresenter.getPropertiesList()
 
-        verify(atLeast = 1) { propertyScreenView.showProperties(eq(expectedProperties)) }
+        verify(atLeast = 1) { propertiesScreenView.showProperties(eq(expectedProperties)) }
     }
 
     @Test
@@ -219,7 +219,7 @@ class VivaRealPresenterTest {
 
         vivaRealScreenPresenter.getPropertiesList()
 
-        verify(atLeast = 1) { propertyScreenView.showProperties(eq(expectedProperties)) }
+        verify(atLeast = 1) { propertiesScreenView.showProperties(eq(expectedProperties)) }
     }
 
     @Test
@@ -247,7 +247,7 @@ class VivaRealPresenterTest {
 
         vivaRealScreenPresenter.getPropertiesList()
 
-        verify(atLeast = 1) { propertyScreenView.showProperties(eq(expectedProperties)) }
+        verify(atLeast = 1) { propertiesScreenView.showProperties(eq(expectedProperties)) }
     }
     @Test
     fun `should show rent Viva Real properties with monthly condo fee less or equal than 50 percent of rent when its in bounding box`() {
@@ -269,7 +269,7 @@ class VivaRealPresenterTest {
 
         vivaRealScreenPresenter.getPropertiesList()
 
-        verify(atLeast = 1) { propertyScreenView.showProperties(eq(expectedProperties)) }
+        verify(atLeast = 1) { propertiesScreenView.showProperties(eq(expectedProperties)) }
     }
 
     @Test
@@ -288,7 +288,7 @@ class VivaRealPresenterTest {
 
         vivaRealScreenPresenter.onPropertySelected(property)
 
-        verify(atLeast = 1) { propertyScreenView.showPropertyDetail(eq(property)) }
+        verify(atLeast = 1) { propertiesScreenView.showPropertyDetail(eq(property)) }
     }
 
 
@@ -298,7 +298,7 @@ class VivaRealPresenterTest {
 
         vivaRealScreenPresenter.loadNextPropertiesOffset()
 
-        verify(atLeast = 1) { propertyScreenView.showProperties(eq(pageZeroExpectedProperties + pageTwoExpectedProperties)) }
+        verify(atLeast = 1) { propertiesScreenView.showProperties(eq(pageZeroExpectedProperties + pageTwoExpectedProperties)) }
     }
 
     private fun assertInitialPropertiesList() {
@@ -306,7 +306,7 @@ class VivaRealPresenterTest {
 
         vivaRealScreenPresenter.getPropertiesList()
 
-        verify { propertyScreenView.showProperties(eq(pageZeroExpectedProperties)) }
+        verify { propertiesScreenView.showProperties(eq(pageZeroExpectedProperties)) }
     }
 
     private fun returnFromRepository(offSet: Int, limit: Int, expectedProperties: List<Property>) {

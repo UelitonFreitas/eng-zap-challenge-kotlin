@@ -8,9 +8,9 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import com.zap.zaprealestate.R
-import com.zap.zaprealestate.model.BusinessType
+import com.zap.zaprealestate.mainscreen.formattedBusinessTypeName
+import com.zap.zaprealestate.mainscreen.formattedPrice
 import com.zap.zaprealestate.model.Property
-import java.text.DecimalFormat
 
 class PropertiesAdapter(
     private var properties: List<Property> = emptyList(),
@@ -43,17 +43,9 @@ class PropertiesAdapter(
                 " ${property.usableAreas}m2, ${property.bathrooms} banheiro(s), ${property.bedrooms} quarto(s)"
             layout.findViewById<TextView>(R.id.text_view_property_resume).text = propertyResume
 
-            layout.findViewById<TextView>(R.id.text_view_business_type).text =
-                property.businessType.run {
-                    when (this) {
-                        BusinessType.RENT -> "Apartamento para Aluguel"
-                        else -> "Apartamento para Venda"
-                    }
-                }
+            layout.findViewById<TextView>(R.id.text_view_business_type).text = property.formattedBusinessTypeName()
 
-            val dec = DecimalFormat("#,###.##")
-            layout.findViewById<TextView>(R.id.text_view_price).text =
-                dec.format(property.price.toLong())
+            layout.findViewById<TextView>(R.id.text_view_price).text = property.formattedPrice()
 
             layout.findViewById<ImageView>(R.id.image_view_property_image).run {
                 Picasso.get()

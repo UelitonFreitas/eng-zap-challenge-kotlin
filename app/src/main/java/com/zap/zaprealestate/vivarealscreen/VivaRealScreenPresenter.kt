@@ -1,6 +1,6 @@
 package com.zap.zaprealestate.vivarealscreen
 
-import com.zap.zaprealestate.PropertyScreenProtocols
+import com.zap.zaprealestate.PropertiesScreenProtocols
 import com.zap.zaprealestate.mainscreen.isPropertyInExpectedRange
 import com.zap.zaprealestate.mainscreen.thereIsLocation
 import com.zap.zaprealestate.model.BusinessType
@@ -8,10 +8,10 @@ import com.zap.zaprealestate.model.Property
 import com.zap.zaprealestate.model.PropertyRepository
 
 class VivaRealScreenPresenter(
-    private val view: PropertyScreenProtocols.View,
+    private val view: PropertiesScreenProtocols.View,
     private val propertyRepository: PropertyRepository
 ) :
-    PropertyScreenProtocols.Presenter {
+    PropertiesScreenProtocols.Presenter {
 
     private var actualOffSet = 0
     private val limitOffSet = 20
