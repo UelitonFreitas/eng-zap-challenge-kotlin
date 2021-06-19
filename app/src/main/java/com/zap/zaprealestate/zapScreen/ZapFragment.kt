@@ -12,6 +12,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.zap.zaprealestate.PropertyScreenProtocols
 import com.zap.zaprealestate.R
 import com.zap.zaprealestate.adapters.PropertiesAdapter
+import com.zap.zaprealestate.detailscreen.PropertyDetailScreen
 import com.zap.zaprealestate.model.Property
 import com.zap.zaprealestate.model.remote.PropertiesRepositoryImpl
 
@@ -97,7 +98,11 @@ class ZapFragment : Fragment(), PropertyScreenProtocols.View {
         swipeLayout.isRefreshing = false
     }
 
+    override fun showPropertyDetail(property: Property) {
+        this.context?.let { startActivity(PropertyDetailScreen.getIntent(it, property)) }
+    }
+
     private fun onPropertyClick(property: Property){
-        Toast.makeText(this.activity, property.toString(), Toast.LENGTH_SHORT).show()
+        presenter.onPropertySelected(property)
     }
 }

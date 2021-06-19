@@ -370,7 +370,6 @@ class ZapPresenterTest {
 
     @Test
     fun `should show ZAP property when it is for sale, inside Bounding Box and price is 10% cheaper, between 3 150 and 3 500 reais`() {
-
         val property = Property(
             "bId",
             listOf("bImage"),
@@ -387,6 +386,24 @@ class ZapPresenterTest {
         zapScreenPresenter.getPropertiesList()
 
         verify(atLeast = 1) { propertyScreenView.showProperties(eq(expectedProperties)) }
+    }
+
+
+    @Test
+    fun `should open property detail screen when it is selected`() {
+        val property = Property(
+            "bId",
+            listOf("bImage"),
+            latitude = minLatitude,
+            longitude = minLongitude,
+            usableAreas = 213,
+            businessType = BusinessType.SALE,
+            price = "315001"
+        )
+
+        zapScreenPresenter.onPropertySelected(property)
+
+        verify(atLeast = 1) { propertyScreenView.showPropertyDetail(eq(property)) }
     }
 
 

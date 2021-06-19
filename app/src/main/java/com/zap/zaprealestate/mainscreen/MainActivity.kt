@@ -18,7 +18,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        setupToolbar()
+
         setupPageAdapter()
+    }
+
+    private fun setupToolbar() {
+        setSupportActionBar(findViewById(R.id.toolbar))
     }
 
     private fun setupPageAdapter() {

@@ -68,6 +68,10 @@ class ZapScreenPresenter(
         getPropertiesList()
     }
 
+    override fun onPropertySelected(property: Property) {
+        view.showPropertyDetail(property)
+    }
+
     private fun showErrorMessage() {
         view.hideLoading()
         view.showErrorMessage()

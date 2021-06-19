@@ -272,6 +272,26 @@ class VivaRealPresenterTest {
         verify(atLeast = 1) { propertyScreenView.showProperties(eq(expectedProperties)) }
     }
 
+    @Test
+    fun `should open property detail screen when it is selected`() {
+        val property = Property(
+            "bId",
+            listOf("bImage"),
+            latitude = minLatitude,
+            longitude = minLongitude,
+            usableAreas = 213,
+            price = "34999",
+            businessType = BusinessType.RENT,
+            monthlyCondoFee = "9999",
+            rentalTotalPrice = "20000"
+        )
+
+        vivaRealScreenPresenter.onPropertySelected(property)
+
+        verify(atLeast = 1) { propertyScreenView.showPropertyDetail(eq(property)) }
+    }
+
+
 
     private fun assertPageOneProperties() {
         returnFromRepository(20, limitOffSet, pageTwoExpectedProperties)
