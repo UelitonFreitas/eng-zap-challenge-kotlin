@@ -3,6 +3,7 @@ package com.zap.zaprealestate.detailscreen
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.squareup.picasso.Picasso
 import com.zap.zaprealestate.R
@@ -70,5 +71,9 @@ class PropertyDetailScreen : AppCompatActivity(), PropertyDetailScreenProtocol.V
 
             text_view_price.text = formattedPrice()
         }
+    }
+
+    override fun showPropertyNotFoundErrorMessage() {
+        Toast.makeText(this, "Property not found :/", Toast.LENGTH_SHORT).show()
     }
 }

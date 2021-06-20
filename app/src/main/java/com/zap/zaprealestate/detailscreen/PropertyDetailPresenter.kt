@@ -8,6 +8,6 @@ class PropertyDetailPresenter(
 ) : PropertyDetailScreenProtocol.Presenter {
 
     override fun loadProperty() {
-        property?.let { view.showProperty(it) }
+        property?.let { view.showProperty(it) } ?: view.showPropertyNotFoundErrorMessage()
     }
 }

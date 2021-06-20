@@ -44,4 +44,14 @@ class PropertyDetailPresenterTest {
 
         verify(exactly = 1) { propertyDetailScreen.showProperty(eq(salePropertyA)) }
     }
+
+    @Test
+    fun `should show property error message when there is no property`(){
+
+        val propertyDetailPresenter = PropertyDetailPresenter(null, propertyDetailScreen)
+
+        propertyDetailPresenter.loadProperty()
+
+        verify(exactly = 1) { propertyDetailScreen.showPropertyNotFoundErrorMessage() }
+    }
 }
