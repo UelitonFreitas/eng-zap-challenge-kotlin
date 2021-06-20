@@ -16,6 +16,7 @@ object Dependencies {
     }
 
     object Android {
+        const val androidXCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9"
         const val androidXViewPage = "androidx.viewpager:viewpager:1.0.0"
         const val androidMaterialDesign = "com.google.android.material:material:1.3.0"
         const val androidSupportDesign = "com.android.support:design:24.2.0"

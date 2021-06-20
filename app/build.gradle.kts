@@ -48,15 +48,18 @@ dependencies {
     implementation(Dependencies.Android.androidXAppCompat)
     implementation(Dependencies.Android.androidXConstraintLayout)
     implementation(Dependencies.Android.androidXRecyclerview)
+    implementation(Dependencies.Android.androidXViewPage)
+    implementation(Dependencies.Android.androidXCoroutines)
+
     implementation(Dependencies.retrofit)
     implementation(Dependencies.gson)
     implementation(Dependencies.gsonConverter)
     implementation(Dependencies.loggingInterceptor)
     implementation(Dependencies.picasso)
+
     implementation(Dependencies.Android.swipeToRefresh)
     implementation(Dependencies.Android.androidSupportDesign)
     implementation(Dependencies.Android.androidMaterialDesign)
-    implementation(Dependencies.Android.androidXViewPage)
 
     testImplementation(Dependencies.Test.junit)
     testImplementation(Dependencies.Test.mockK)

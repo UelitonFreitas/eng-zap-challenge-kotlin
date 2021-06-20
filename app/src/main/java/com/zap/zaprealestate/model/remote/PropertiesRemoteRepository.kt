@@ -5,6 +5,10 @@ import com.zap.zaprealestate.model.BusinessType
 import com.zap.zaprealestate.model.Property
 import com.zap.zaprealestate.model.PropertyRepository
 import com.zap.zaprealestate.model.remote.models.PropertyResponse
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -35,6 +39,8 @@ class PropertiesRepositoryImpl : PropertyRepository {
         .build()
 
     private val propertiesApiClient: PropertiesAPI = retrofit.create(PropertiesAPI::class.java)
+
+    private val localScope = CoroutineScope(Dispatchers.IO)
 
     override fun getProperties(
         offSet: Int,
@@ -81,50 +87,53 @@ class PropertiesRepositoryImpl : PropertyRepository {
 
         Log.i(tag, "Lading data from API")
 
-        propertiesApiClient.getProperties()?.enqueue(object : Callback<List<PropertyResponse>?> {
-            override fun onFailure(call: Call<List<PropertyResponse>?>, t: Throwable) {
-                t.printStackTrace()
-                onError?.invoke()
-            }
+        localScope.launch {
+            propertiesApiClient.getProperties()
+                ?.enqueue(object : Callback<List<PropertyResponse>?> {
+                    override fun onFailure(call: Call<List<PropertyResponse>?>, t: Throwable) {
+                        t.printStackTrace()
+                        onError?.invoke()
+                    }
 
-            override fun onResponse(
-                call: Call<List<PropertyResponse>?>,
-                response: Response<List<PropertyResponse>?>
-            ) {
-                val propertiesResponse = response.body()
+                    override fun onResponse(
+                        call: Call<List<PropertyResponse>?>,
+                        response: Response<List<PropertyResponse>?>
+                    ) {
+                        val propertiesResponse = response.body()
 
-                val properties =
-                    propertiesResponse?.map {
-                        it.run {
+                        val properties =
+                            propertiesResponse?.map {
+                                it.run {
 
-                            Property(
-                                id = id,
-                                images = images,
-                                businessType = getBusinessType(pricingInfos.businessType),
-                                latitude = address.geoLocation.location.lat,
-                                longitude = address.geoLocation.location.lon,
-                                usableAreas = usableAreas,
-                                price = pricingInfos.price,
-                                bathrooms = bathrooms,
-                                bedrooms = bedrooms
+                                    Property(
+                                        id = id,
+                                        images = images,
+                                        businessType = getBusinessType(pricingInfos.businessType),
+                                        latitude = address.geoLocation.location.lat,
+                                        longitude = address.geoLocation.location.lon,
+                                        usableAreas = usableAreas,
+                                        price = pricingInfos.price,
+                                        bathrooms = bathrooms,
+                                        bedrooms = bedrooms
 
-                            )
-                        }
-                    } ?: emptyList()
+                                    )
+                                }
+                            } ?: emptyList()
 
-                properties.takeIf {
-                    it.isNotEmpty()
-                }?.let {
-                    cacheProperties(it)
+                        properties.takeIf {
+                            it.isNotEmpty()
+                        }?.let {
+                            cacheProperties(it)
 
-                    val (fromIndex, toIndex) = getIndexSlice(offSet, limit)
+                            val (fromIndex, toIndex) = getIndexSlice(offSet, limit)
 
-                    Log.i(tag, "Lading data from API from indexes: $fromIndex to $toIndex")
+                            Log.i(tag, "Lading data from API from indexes: $fromIndex to $toIndex")
 
-                    onSuccess(properties.subList(fromIndex, toIndex))
-                } ?: onError?.invoke()
-            }
-        })
+                            onSuccess(properties.subList(fromIndex, toIndex))
+                        } ?: onError?.invoke()
+                    }
+                })
+        }
     }
 
     private fun getBusinessType(businessType: String) = when (businessType) {
@@ -143,6 +152,10 @@ class PropertiesRepositoryImpl : PropertyRepository {
         val fromIndex = offSet
         val toIndex = fromIndex + limit
         return Pair(fromIndex, toIndex)
+    }
+
+    fun cancel(){
+        localScope.cancel()
     }
 }
 
