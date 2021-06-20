@@ -1,12 +1,13 @@
-package com.zap.zaprealestate.zapScreen
+package com.zap.zaprealestate.mainscreen.vivarealscreen
 
 import com.zap.zaprealestate.PropertiesScreenProtocols
 import com.zap.zaprealestate.mainscreen.isPropertyInExpectedRange
+import com.zap.zaprealestate.mainscreen.thereIsLocation
 import com.zap.zaprealestate.model.BusinessType
 import com.zap.zaprealestate.model.Property
 import com.zap.zaprealestate.model.PropertyRepository
 
-class ZapScreenPresenter(
+class VivaRealScreenPresenter(
     private val view: PropertiesScreenProtocols.View,
     private val propertyRepository: PropertyRepository
 ) :
@@ -20,10 +21,7 @@ class ZapScreenPresenter(
         view.hideLoading()
 
         with(this.properties) {
-            addAll(
-                properties
-                    .filter(::salePropertyRestrictions)
-            )
+            addAll(properties.filter(::salePropertyRestrictions))
             takeIf { it.isNotEmpty() }?.let {
                 view.showProperties(this)
             } ?: view.showEmptyList()
@@ -31,27 +29,25 @@ class ZapScreenPresenter(
     }
 
     private fun salePropertyRestrictions(property: Property) =
-        hasUsableAreaMinimumPrice(property) && property.isPropertyInExpectedRange()
+        property.thereIsLocation() && hasNumericMonthlyCondoFee(property)
 
-    private fun hasUsableAreaMinimumPrice(property: Property) = try {
-            when (property.businessType) {
-                BusinessType.SALE -> thereIsUsableAre(property) && (property.price.toLong() > calculateSalePropertyPrice(property))
-                else -> true
+    private fun hasNumericMonthlyCondoFee(property: Property) = try {
+        when (property.businessType) {
+            BusinessType.RENT -> {
+                property.monthlyCondoFee.toLong() < getMaximumMonthlyCondoFee(property)
             }
-        } catch (e: Throwable) {
-            false
+            else -> true
         }
-
-    private fun calculateSalePropertyPrice(property: Property): Long {
-        val minimumPrice = 350000L
-        return when {
-            property.businessType == BusinessType.SALE && property.isPropertyInExpectedRange() -> minimumPrice - (minimumPrice * 0.1).toLong()
-            else -> minimumPrice
-        }
+    } catch (e: Throwable) {
+        false
     }
 
-    private fun thereIsUsableAre(it: Property) = it.usableAreas != 0L
-
+    private fun getMaximumMonthlyCondoFee(property: Property) = run {
+        property.rentalTotalPrice.toLong() * when {
+            property.isPropertyInExpectedRange() -> 0.5
+            else -> 0.3
+        }
+    }
 
     override fun getPropertiesList() {
         view.showLoading()

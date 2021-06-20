@@ -1,4 +1,4 @@
-package com.zap.zaprealestate.zapScreen
+package com.zap.zaprealestate.mainscreen.zapScreen
 
 import android.os.Bundle
 import android.view.LayoutInflater

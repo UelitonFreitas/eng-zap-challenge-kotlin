@@ -1,4 +1,4 @@
-package com.zap.zaprealestate.vivarealscreen
+package com.zap.zaprealestate.mainscreen.vivarealscreen
 
 import android.os.Bundle
 import android.view.LayoutInflater

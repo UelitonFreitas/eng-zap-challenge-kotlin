@@ -4,7 +4,7 @@ import com.zap.zaprealestate.PropertiesScreenProtocols
 import com.zap.zaprealestate.model.BusinessType
 import com.zap.zaprealestate.model.Property
 import com.zap.zaprealestate.model.PropertyRepository
-import com.zap.zaprealestate.vivarealscreen.VivaRealScreenPresenter
+import com.zap.zaprealestate.mainscreen.vivarealscreen.VivaRealScreenPresenter
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
