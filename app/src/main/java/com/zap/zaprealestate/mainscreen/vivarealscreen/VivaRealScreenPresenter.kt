@@ -49,19 +49,20 @@ class VivaRealScreenPresenter(
         }
     }
 
-    override fun getPropertiesList() {
+    override fun getPropertiesList(forceRefresh: Boolean) {
         view.showLoading()
         propertyRepository.getProperties(
             actualOffSet,
             limit = limitOffSet,
             onError = ::showErrorMessage,
-            onSuccess = ::showProperties
+            onSuccess = ::showProperties,
+            forceRefresh = forceRefresh
         )
     }
 
     override fun loadNextPropertiesOffset() {
         actualOffSet += limitOffSet
-        getPropertiesList()
+        getPropertiesList(forceRefresh = false)
     }
 
     override fun onPropertySelected(property: Property) {

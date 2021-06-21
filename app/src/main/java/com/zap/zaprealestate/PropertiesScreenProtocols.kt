@@ -13,7 +13,7 @@ interface PropertiesScreenProtocols {
     }
 
     interface Presenter {
-        fun getPropertiesList()
+        fun getPropertiesList(forceRefresh :Boolean = true)
         fun loadNextPropertiesOffset()
         fun onPropertySelected(property: Property)
     }

@@ -1,10 +1,10 @@
 package com.zap.zaprealestate.mainscreen
 
 import com.zap.zaprealestate.PropertiesScreenProtocols
+import com.zap.zaprealestate.mainscreen.vivarealscreen.VivaRealScreenPresenter
 import com.zap.zaprealestate.model.BusinessType
 import com.zap.zaprealestate.model.Property
 import com.zap.zaprealestate.model.PropertyRepository
-import com.zap.zaprealestate.mainscreen.vivarealscreen.VivaRealScreenPresenter
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -135,12 +135,20 @@ class VivaRealPresenterTest {
         verify { propertiesScreenView.showErrorMessage() }
     }
 
-
     @Test
     fun `should show next properties page`() {
         assertInitialPropertiesList()
 
         assertPageOneProperties()
+    }
+
+    @Test
+    fun `should load cached properties`(){
+        returnFromRepository(0, limitOffSet, pageZeroExpectedProperties, false)
+
+        vivaRealScreenPresenter.getPropertiesList(forceRefresh = false)
+
+        verify { propertiesScreenView.showProperties(eq(pageZeroExpectedProperties)) }
     }
 
     @Test
@@ -249,6 +257,7 @@ class VivaRealPresenterTest {
 
         verify(atLeast = 1) { propertiesScreenView.showProperties(eq(expectedProperties)) }
     }
+
     @Test
     fun `should show rent Viva Real properties with monthly condo fee less or equal than 50 percent of rent when its in bounding box`() {
         val property = Property(
@@ -291,10 +300,8 @@ class VivaRealPresenterTest {
         verify(atLeast = 1) { propertiesScreenView.showPropertyDetail(eq(property)) }
     }
 
-
-
     private fun assertPageOneProperties() {
-        returnFromRepository(20, limitOffSet, pageTwoExpectedProperties)
+        returnFromRepository(20, limitOffSet, pageTwoExpectedProperties, forceRefresh = fals)
 
         vivaRealScreenPresenter.loadNextPropertiesOffset()
 
@@ -309,14 +316,15 @@ class VivaRealPresenterTest {
         verify { propertiesScreenView.showProperties(eq(pageZeroExpectedProperties)) }
     }
 
-    private fun returnFromRepository(offSet: Int, limit: Int, expectedProperties: List<Property>) {
+    private fun returnFromRepository(offSet: Int, limit: Int, expectedProperties: List<Property>, forceRefresh :Boolean = true) {
         slot<((List<Property>) -> Unit)>().let { callback ->
             every {
                 propertyRepository.getProperties(
                     offSet = offSet,
                     limit = limit,
                     onError = any(),
-                    onSuccess = capture(callback)
+                    onSuccess = capture(callback),
+                    forceRefresh = forceRefresh
                 )
             } answers {
                 callback.captured.invoke(expectedProperties)

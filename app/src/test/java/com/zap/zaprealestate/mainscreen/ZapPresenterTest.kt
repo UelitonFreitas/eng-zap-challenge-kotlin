@@ -1,10 +1,10 @@
 package com.zap.zaprealestate.mainscreen
 
 import com.zap.zaprealestate.PropertiesScreenProtocols
+import com.zap.zaprealestate.mainscreen.zapScreen.ZapScreenPresenter
 import com.zap.zaprealestate.model.BusinessType
 import com.zap.zaprealestate.model.Property
 import com.zap.zaprealestate.model.PropertyRepository
-import com.zap.zaprealestate.mainscreen.zapScreen.ZapScreenPresenter
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -142,6 +142,15 @@ class ZapPresenterTest {
         zapScreenPresenter.getPropertiesList()
 
         verify(exactly = 1) { propertiesScreenView.showLoading() }
+    }
+
+    @Test
+    fun `should load cached properties`(){
+        returnFromRepository(0, limitOffSet, pageZeroExpectedProperties, false)
+
+        zapScreenPresenter.getPropertiesList(forceRefresh = false)
+
+        verify { propertiesScreenView.showProperties(eq(pageZeroExpectedProperties)) }
     }
 
     @Test
@@ -408,7 +417,7 @@ class ZapPresenterTest {
 
 
     private fun assertPageOneProperties() {
-        returnFromRepository(20, limitOffSet, pageTwoExpectedProperties)
+        returnFromRepository(20, limitOffSet, pageTwoExpectedProperties, forceRefresh = false)
 
         zapScreenPresenter.loadNextPropertiesOffset()
 
@@ -418,19 +427,20 @@ class ZapPresenterTest {
     private fun assertInitialPropertiesList() {
         returnFromRepository(0, limitOffSet, pageZeroExpectedProperties)
 
-        zapScreenPresenter.getPropertiesList()
+        zapScreenPresenter.getPropertiesList(forceRefresh = true)
 
         verify { propertiesScreenView.showProperties(eq(pageZeroExpectedProperties)) }
     }
 
-    private fun returnFromRepository(offSet: Int, limit: Int, expectedProperties: List<Property>) {
+    private fun returnFromRepository(offSet: Int, limit: Int, expectedProperties: List<Property>, forceRefresh :Boolean = true) {
         slot<((List<Property>) -> Unit)>().let { callback ->
             every {
                 propertyRepository.getProperties(
                     offSet = offSet,
                     limit = limit,
                     onError = any(),
-                    onSuccess = capture(callback)
+                    onSuccess = capture(callback),
+                    forceRefresh
                 )
             } answers {
                 callback.captured.invoke(expectedProperties)

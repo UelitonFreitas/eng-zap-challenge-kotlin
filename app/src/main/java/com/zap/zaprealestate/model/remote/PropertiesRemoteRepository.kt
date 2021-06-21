@@ -46,10 +46,11 @@ class PropertiesRepositoryImpl : PropertyRepository {
         offSet: Int,
         limit: Int,
         onError: (() -> Unit)?,
-        onSuccess: (List<Property>) -> Unit
+        onSuccess: (List<Property>) -> Unit,
+        forceRefresh: Boolean
     ) {
 
-        cachedProperties?.let { properties ->
+        cachedProperties?.takeIf { forceRefresh.not() }?.let { properties ->
 
             Log.i(tag, "Lading cached data with offset $offSet and  $limit")
 

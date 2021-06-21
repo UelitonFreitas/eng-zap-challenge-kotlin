@@ -39,7 +39,9 @@ class ZapFragment : Fragment(), PropertiesScreenProtocols.View {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         presenter = ZapScreenPresenter(this, PropertiesRepositoryImpl())
 
-        swipe_container.setOnRefreshListener { presenter.getPropertiesList() }
+        swipe_container.setOnRefreshListener {
+            presenter.getPropertiesList(forceRefresh = true)
+        }
 
         swipe_container.setColorSchemeResources(android.R.color.holo_blue_bright,
             android.R.color.holo_green_light,
@@ -69,7 +71,7 @@ class ZapFragment : Fragment(), PropertiesScreenProtocols.View {
     override fun onResume() {
         super.onResume()
 
-        presenter.getPropertiesList()
+        presenter.getPropertiesList(forceRefresh = false)
     }
 
     override fun showProperties(properties: List<Property>) {

@@ -40,7 +40,7 @@ class VivaRealFragment : Fragment(), PropertiesScreenProtocols.View {
         presenter = VivaRealScreenPresenter(this, PropertiesRepositoryImpl())
 
         swipe_container.setOnRefreshListener {
-            presenter.getPropertiesList()
+            presenter.getPropertiesList(forceRefresh = true)
         }
 
         swipe_container.setColorSchemeResources(android.R.color.holo_blue_bright,
@@ -70,7 +70,7 @@ class VivaRealFragment : Fragment(), PropertiesScreenProtocols.View {
     override fun onResume() {
         super.onResume()
 
-        presenter.getPropertiesList()
+        presenter.getPropertiesList(forceRefresh = false)
     }
 
     override fun showProperties(properties: List<Property>) {

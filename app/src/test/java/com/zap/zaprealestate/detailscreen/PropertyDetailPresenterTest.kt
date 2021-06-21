@@ -1,7 +1,5 @@
-package com.zap.zaprealestate.mainscreen
+package com.zap.zaprealestate.detailscreen
 
-import com.zap.zaprealestate.detailscreen.PropertyDetailPresenter
-import com.zap.zaprealestate.detailscreen.PropertyDetailScreenProtocol
 import com.zap.zaprealestate.model.BusinessType
 import com.zap.zaprealestate.model.Property
 import io.mockk.MockKAnnotations
