@@ -301,7 +301,7 @@ class VivaRealPresenterTest {
     }
 
     private fun assertPageOneProperties() {
-        returnFromRepository(20, limitOffSet, pageTwoExpectedProperties, forceRefresh = fals)
+        returnFromRepository(20, limitOffSet, pageTwoExpectedProperties, forceRefresh = false)
 
         vivaRealScreenPresenter.loadNextPropertiesOffset()
 
