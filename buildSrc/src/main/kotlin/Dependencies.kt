@@ -3,6 +3,7 @@ object Dependencies {
     const val picasso = "com.squareup.picasso:picasso:2.8"
 
     const val androidGradlePlugin = "com.android.tools.build:gradle:${Versions.androidGradlePlugin}"
+
     const val kotlinGradlePlugin =
         "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlinVersion}"
     const val retrofit = "com.squareup.retrofit2:retrofit:2.9.0"
@@ -15,9 +16,13 @@ object Dependencies {
     }
 
     object Android {
+        const val androidXCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9"
+        const val androidXViewPage = "androidx.viewpager:viewpager:1.0.0"
+        const val androidMaterialDesign = "com.google.android.material:material:1.3.0"
+        const val androidSupportDesign = "com.android.support:design:24.2.0"
         const val swipeToRefresh = "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
         const val androidXCoreLibrary = "androidx.core:core-ktx:1.3.1"
-        const val androidXAppCompat = "androidx.appcompat:appcompat:1.2.0"
+        const val androidXAppCompat = "androidx.appcompat:appcompat:1.3.0"
         const val androidXConstraintLayout = "androidx.constraintlayout:constraintlayout:2.0.1"
         const val androidXRecyclerview = "androidx.recyclerview:recyclerview:1.2.0"
     }

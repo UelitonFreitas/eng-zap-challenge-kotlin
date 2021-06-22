@@ -1,16 +1,16 @@
-package com.zap.zaprealestate.zapScreen
+package com.zap.zaprealestate.mainscreen.zapScreen
 
-import com.zap.zaprealestate.PropertyScreenProtocols
+import com.zap.zaprealestate.PropertiesScreenProtocols
 import com.zap.zaprealestate.mainscreen.isPropertyInExpectedRange
 import com.zap.zaprealestate.model.BusinessType
 import com.zap.zaprealestate.model.Property
 import com.zap.zaprealestate.model.PropertyRepository
 
 class ZapScreenPresenter(
-    private val view: PropertyScreenProtocols.View,
+    private val view: PropertiesScreenProtocols.View,
     private val propertyRepository: PropertyRepository
 ) :
-    PropertyScreenProtocols.Presenter {
+    PropertiesScreenProtocols.Presenter {
 
     private var actualOffSet = 0
     private val limitOffSet = 20
@@ -53,19 +53,24 @@ class ZapScreenPresenter(
     private fun thereIsUsableAre(it: Property) = it.usableAreas != 0L
 
 
-    override fun getPropertiesList() {
+    override fun getPropertiesList(forceRefresh: Boolean) {
         view.showLoading()
         propertyRepository.getProperties(
             actualOffSet,
             limit = limitOffSet,
             onError = ::showErrorMessage,
-            onSuccess = ::showProperties
+            onSuccess = ::showProperties,
+            forceRefresh = forceRefresh
         )
     }
 
     override fun loadNextPropertiesOffset() {
         actualOffSet += limitOffSet
-        getPropertiesList()
+        getPropertiesList(forceRefresh = false)
+    }
+
+    override fun onPropertySelected(property: Property) {
+        view.showPropertyDetail(property)
     }
 
     private fun showErrorMessage() {

@@ -1,10 +1,10 @@
 package com.zap.zaprealestate.mainscreen
 
-import com.zap.zaprealestate.PropertyScreenProtocols
+import com.zap.zaprealestate.PropertiesScreenProtocols
+import com.zap.zaprealestate.mainscreen.zapScreen.ZapScreenPresenter
 import com.zap.zaprealestate.model.BusinessType
 import com.zap.zaprealestate.model.Property
 import com.zap.zaprealestate.model.PropertyRepository
-import com.zap.zaprealestate.zapScreen.ZapScreenPresenter
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -15,7 +15,7 @@ import org.junit.Test
 
 class ZapPresenterTest {
     @MockK
-    private lateinit var propertyScreenView: PropertyScreenProtocols.View
+    private lateinit var propertiesScreenView: PropertiesScreenProtocols.View
 
     @MockK
     private lateinit var propertyRepository: PropertyRepository
@@ -98,7 +98,7 @@ class ZapPresenterTest {
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
 
-        zapScreenPresenter = ZapScreenPresenter(propertyScreenView, propertyRepository)
+        zapScreenPresenter = ZapScreenPresenter(propertiesScreenView, propertyRepository)
     }
 
     @Test
@@ -115,7 +115,7 @@ class ZapPresenterTest {
 
         zapScreenPresenter.getPropertiesList()
 
-        verify { propertyScreenView.showEmptyList() }
+        verify { propertiesScreenView.showEmptyList() }
     }
 
     @Test
@@ -124,7 +124,7 @@ class ZapPresenterTest {
 
         zapScreenPresenter.getPropertiesList()
 
-        verify { propertyScreenView.showErrorMessage() }
+        verify { propertiesScreenView.showErrorMessage() }
     }
 
 
@@ -141,7 +141,16 @@ class ZapPresenterTest {
 
         zapScreenPresenter.getPropertiesList()
 
-        verify(exactly = 1) { propertyScreenView.showLoading() }
+        verify(exactly = 1) { propertiesScreenView.showLoading() }
+    }
+
+    @Test
+    fun `should load cached properties`(){
+        returnFromRepository(0, limitOffSet, pageZeroExpectedProperties, false)
+
+        zapScreenPresenter.getPropertiesList(forceRefresh = false)
+
+        verify { propertiesScreenView.showProperties(eq(pageZeroExpectedProperties)) }
     }
 
     @Test
@@ -150,7 +159,7 @@ class ZapPresenterTest {
 
         zapScreenPresenter.getPropertiesList()
 
-        verify(atLeast = 1) { propertyScreenView.hideLoading() }
+        verify(atLeast = 1) { propertiesScreenView.hideLoading() }
     }
 
     @Test
@@ -159,7 +168,7 @@ class ZapPresenterTest {
 
         zapScreenPresenter.getPropertiesList()
 
-        verify(atLeast = 1) { propertyScreenView.hideLoading() }
+        verify(atLeast = 1) { propertiesScreenView.hideLoading() }
     }
 
 
@@ -184,7 +193,7 @@ class ZapPresenterTest {
 
         zapScreenPresenter.getPropertiesList()
 
-        verify(atLeast = 1) { propertyScreenView.showProperties(eq(expectedProperties)) }
+        verify(atLeast = 1) { propertiesScreenView.showProperties(eq(expectedProperties)) }
     }
 
     @Test
@@ -210,7 +219,7 @@ class ZapPresenterTest {
 
         zapScreenPresenter.getPropertiesList()
 
-        verify(atLeast = 1) { propertyScreenView.showProperties(eq(expectedProperties)) }
+        verify(atLeast = 1) { propertiesScreenView.showProperties(eq(expectedProperties)) }
     }
 
     @Test
@@ -236,7 +245,7 @@ class ZapPresenterTest {
 
         zapScreenPresenter.getPropertiesList()
 
-        verify(atLeast = 1) { propertyScreenView.showProperties(eq(expectedProperties)) }
+        verify(atLeast = 1) { propertiesScreenView.showProperties(eq(expectedProperties)) }
     }
 
     @Test
@@ -262,7 +271,7 @@ class ZapPresenterTest {
 
         zapScreenPresenter.getPropertiesList()
 
-        verify(atLeast = 1) { propertyScreenView.showProperties(eq(expectedProperties)) }
+        verify(atLeast = 1) { propertiesScreenView.showProperties(eq(expectedProperties)) }
     }
 
     @Test
@@ -288,7 +297,7 @@ class ZapPresenterTest {
 
         zapScreenPresenter.getPropertiesList()
 
-        verify(atLeast = 1) { propertyScreenView.showProperties(eq(expectedProperties)) }
+        verify(atLeast = 1) { propertiesScreenView.showProperties(eq(expectedProperties)) }
     }
 
     @Test
@@ -313,7 +322,7 @@ class ZapPresenterTest {
 
         zapScreenPresenter.getPropertiesList()
 
-        verify(atLeast = 1) { propertyScreenView.showProperties(eq(expectedProperties)) }
+        verify(atLeast = 1) { propertiesScreenView.showProperties(eq(expectedProperties)) }
     }
 
     @Test
@@ -339,7 +348,7 @@ class ZapPresenterTest {
 
         zapScreenPresenter.getPropertiesList()
 
-        verify(atLeast = 1) { propertyScreenView.showProperties(eq(expectedProperties)) }
+        verify(atLeast = 1) { propertiesScreenView.showProperties(eq(expectedProperties)) }
     }
 
     @Test
@@ -365,12 +374,11 @@ class ZapPresenterTest {
 
         zapScreenPresenter.getPropertiesList()
 
-        verify(atLeast = 1) { propertyScreenView.showProperties(eq(expectedProperties)) }
+        verify(atLeast = 1) { propertiesScreenView.showProperties(eq(expectedProperties)) }
     }
 
     @Test
     fun `should show ZAP property when it is for sale, inside Bounding Box and price is 10% cheaper, between 3 150 and 3 500 reais`() {
-
         val property = Property(
             "bId",
             listOf("bImage"),
@@ -386,34 +394,53 @@ class ZapPresenterTest {
 
         zapScreenPresenter.getPropertiesList()
 
-        verify(atLeast = 1) { propertyScreenView.showProperties(eq(expectedProperties)) }
+        verify(atLeast = 1) { propertiesScreenView.showProperties(eq(expectedProperties)) }
+    }
+
+
+    @Test
+    fun `should open property detail screen when it is selected`() {
+        val property = Property(
+            "bId",
+            listOf("bImage"),
+            latitude = minLatitude,
+            longitude = minLongitude,
+            usableAreas = 213,
+            businessType = BusinessType.SALE,
+            price = "315001"
+        )
+
+        zapScreenPresenter.onPropertySelected(property)
+
+        verify(atLeast = 1) { propertiesScreenView.showPropertyDetail(eq(property)) }
     }
 
 
     private fun assertPageOneProperties() {
-        returnFromRepository(20, limitOffSet, pageTwoExpectedProperties)
+        returnFromRepository(20, limitOffSet, pageTwoExpectedProperties, forceRefresh = false)
 
         zapScreenPresenter.loadNextPropertiesOffset()
 
-        verify(atLeast = 1) { propertyScreenView.showProperties(eq(pageZeroExpectedProperties + pageTwoExpectedProperties)) }
+        verify(atLeast = 1) { propertiesScreenView.showProperties(eq(pageZeroExpectedProperties + pageTwoExpectedProperties)) }
     }
 
     private fun assertInitialPropertiesList() {
         returnFromRepository(0, limitOffSet, pageZeroExpectedProperties)
 
-        zapScreenPresenter.getPropertiesList()
+        zapScreenPresenter.getPropertiesList(forceRefresh = true)
 
-        verify { propertyScreenView.showProperties(eq(pageZeroExpectedProperties)) }
+        verify { propertiesScreenView.showProperties(eq(pageZeroExpectedProperties)) }
     }
 
-    private fun returnFromRepository(offSet: Int, limit: Int, expectedProperties: List<Property>) {
+    private fun returnFromRepository(offSet: Int, limit: Int, expectedProperties: List<Property>, forceRefresh :Boolean = true) {
         slot<((List<Property>) -> Unit)>().let { callback ->
             every {
                 propertyRepository.getProperties(
                     offSet = offSet,
                     limit = limit,
                     onError = any(),
-                    onSuccess = capture(callback)
+                    onSuccess = capture(callback),
+                    forceRefresh
                 )
             } answers {
                 callback.captured.invoke(expectedProperties)

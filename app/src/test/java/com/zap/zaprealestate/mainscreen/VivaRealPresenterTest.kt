@@ -1,10 +1,10 @@
 package com.zap.zaprealestate.mainscreen
 
-import com.zap.zaprealestate.PropertyScreenProtocols
+import com.zap.zaprealestate.PropertiesScreenProtocols
+import com.zap.zaprealestate.mainscreen.vivarealscreen.VivaRealScreenPresenter
 import com.zap.zaprealestate.model.BusinessType
 import com.zap.zaprealestate.model.Property
 import com.zap.zaprealestate.model.PropertyRepository
-import com.zap.zaprealestate.vivarealscreen.VivaRealScreenPresenter
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -15,7 +15,7 @@ import org.junit.Test
 
 class VivaRealPresenterTest {
     @MockK
-    private lateinit var propertyScreenView: PropertyScreenProtocols.View
+    private lateinit var propertiesScreenView: PropertiesScreenProtocols.View
 
     @MockK
     private lateinit var propertyRepository: PropertyRepository
@@ -106,7 +106,7 @@ class VivaRealPresenterTest {
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
 
-        vivaRealScreenPresenter = VivaRealScreenPresenter(propertyScreenView, propertyRepository)
+        vivaRealScreenPresenter = VivaRealScreenPresenter(propertiesScreenView, propertyRepository)
     }
 
     @Test
@@ -123,7 +123,7 @@ class VivaRealPresenterTest {
 
         vivaRealScreenPresenter.getPropertiesList()
 
-        verify { propertyScreenView.showEmptyList() }
+        verify { propertiesScreenView.showEmptyList() }
     }
 
     @Test
@@ -132,9 +132,8 @@ class VivaRealPresenterTest {
 
         vivaRealScreenPresenter.getPropertiesList()
 
-        verify { propertyScreenView.showErrorMessage() }
+        verify { propertiesScreenView.showErrorMessage() }
     }
-
 
     @Test
     fun `should show next properties page`() {
@@ -144,12 +143,21 @@ class VivaRealPresenterTest {
     }
 
     @Test
+    fun `should load cached properties`(){
+        returnFromRepository(0, limitOffSet, pageZeroExpectedProperties, false)
+
+        vivaRealScreenPresenter.getPropertiesList(forceRefresh = false)
+
+        verify { propertiesScreenView.showProperties(eq(pageZeroExpectedProperties)) }
+    }
+
+    @Test
     fun `should show loading on view when fetching properties`() {
         returnFromRepository(0, limitOffSet, pageZeroExpectedProperties)
 
         vivaRealScreenPresenter.getPropertiesList()
 
-        verify(exactly = 1) { propertyScreenView.showLoading() }
+        verify(exactly = 1) { propertiesScreenView.showLoading() }
     }
 
     @Test
@@ -158,7 +166,7 @@ class VivaRealPresenterTest {
 
         vivaRealScreenPresenter.getPropertiesList()
 
-        verify(atLeast = 1) { propertyScreenView.hideLoading() }
+        verify(atLeast = 1) { propertiesScreenView.hideLoading() }
     }
 
     @Test
@@ -167,7 +175,7 @@ class VivaRealPresenterTest {
 
         vivaRealScreenPresenter.getPropertiesList()
 
-        verify(atLeast = 1) { propertyScreenView.hideLoading() }
+        verify(atLeast = 1) { propertiesScreenView.hideLoading() }
     }
 
 
@@ -192,7 +200,7 @@ class VivaRealPresenterTest {
 
         vivaRealScreenPresenter.getPropertiesList()
 
-        verify(atLeast = 1) { propertyScreenView.showProperties(eq(expectedProperties)) }
+        verify(atLeast = 1) { propertiesScreenView.showProperties(eq(expectedProperties)) }
     }
 
     @Test
@@ -219,7 +227,7 @@ class VivaRealPresenterTest {
 
         vivaRealScreenPresenter.getPropertiesList()
 
-        verify(atLeast = 1) { propertyScreenView.showProperties(eq(expectedProperties)) }
+        verify(atLeast = 1) { propertiesScreenView.showProperties(eq(expectedProperties)) }
     }
 
     @Test
@@ -247,8 +255,9 @@ class VivaRealPresenterTest {
 
         vivaRealScreenPresenter.getPropertiesList()
 
-        verify(atLeast = 1) { propertyScreenView.showProperties(eq(expectedProperties)) }
+        verify(atLeast = 1) { propertiesScreenView.showProperties(eq(expectedProperties)) }
     }
+
     @Test
     fun `should show rent Viva Real properties with monthly condo fee less or equal than 50 percent of rent when its in bounding box`() {
         val property = Property(
@@ -269,16 +278,34 @@ class VivaRealPresenterTest {
 
         vivaRealScreenPresenter.getPropertiesList()
 
-        verify(atLeast = 1) { propertyScreenView.showProperties(eq(expectedProperties)) }
+        verify(atLeast = 1) { propertiesScreenView.showProperties(eq(expectedProperties)) }
     }
 
+    @Test
+    fun `should open property detail screen when it is selected`() {
+        val property = Property(
+            "bId",
+            listOf("bImage"),
+            latitude = minLatitude,
+            longitude = minLongitude,
+            usableAreas = 213,
+            price = "34999",
+            businessType = BusinessType.RENT,
+            monthlyCondoFee = "9999",
+            rentalTotalPrice = "20000"
+        )
+
+        vivaRealScreenPresenter.onPropertySelected(property)
+
+        verify(atLeast = 1) { propertiesScreenView.showPropertyDetail(eq(property)) }
+    }
 
     private fun assertPageOneProperties() {
-        returnFromRepository(20, limitOffSet, pageTwoExpectedProperties)
+        returnFromRepository(20, limitOffSet, pageTwoExpectedProperties, forceRefresh = false)
 
         vivaRealScreenPresenter.loadNextPropertiesOffset()
 
-        verify(atLeast = 1) { propertyScreenView.showProperties(eq(pageZeroExpectedProperties + pageTwoExpectedProperties)) }
+        verify(atLeast = 1) { propertiesScreenView.showProperties(eq(pageZeroExpectedProperties + pageTwoExpectedProperties)) }
     }
 
     private fun assertInitialPropertiesList() {
@@ -286,17 +313,18 @@ class VivaRealPresenterTest {
 
         vivaRealScreenPresenter.getPropertiesList()
 
-        verify { propertyScreenView.showProperties(eq(pageZeroExpectedProperties)) }
+        verify { propertiesScreenView.showProperties(eq(pageZeroExpectedProperties)) }
     }
 
-    private fun returnFromRepository(offSet: Int, limit: Int, expectedProperties: List<Property>) {
+    private fun returnFromRepository(offSet: Int, limit: Int, expectedProperties: List<Property>, forceRefresh :Boolean = true) {
         slot<((List<Property>) -> Unit)>().let { callback ->
             every {
                 propertyRepository.getProperties(
                     offSet = offSet,
                     limit = limit,
                     onError = any(),
-                    onSuccess = capture(callback)
+                    onSuccess = capture(callback),
+                    forceRefresh = forceRefresh
                 )
             } answers {
                 callback.captured.invoke(expectedProperties)
